@@ -1,0 +1,31 @@
+Postfix master stuff
+--------------------
+${client_address}
+${client_helo}
+${client_hostname}
+${client_port}
+${client_protocol}
+${domain}    # user+box@DOMAIN
+${extension} # user+BOX@domain
+${mailbox}   # USER+BOX@domain
+${nexthop}
+${original_recipient} # before any aliasing
+${queue_id}
+${recipient}
+${sasl_method}
+${sasl_sender}
+${sasl_username}
+${sender}
+${size}
+${user}      # USER+box@domain
+
+MDA environment variables
+-------------------------
+DOMAIN			self_domain
+LOCAL			_smlmp
+MAIL_CONFIG		/etc/postfix
+ORIGINAL_RECIPIENT	mailing_list_address@self_domain
+RECIPIENT		_smlmp@self_domain
+SENDER			sending_user@sending_domain
+EXTENSION		(thing between + and @)
+LOGNAME			_smlmp
