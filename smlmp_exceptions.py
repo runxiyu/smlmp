@@ -17,10 +17,10 @@
 
 from __future__ import annotations
 
-class SMLMPException(Exception): pass
+class SMLMPException(Exception): report_subject = "SMLMP Exception"
 
-class SMLMPCriticalError(SMLMPException): pass
-class SMLMPInvalidConfiguration(SMLMPCriticalError): pass
+class SMLMPCriticalError(SMLMPException): report_subject = "SMLMP Critical Error"
+class SMLMPInvalidConfiguration(SMLMPCriticalError): report_subject = "SMLMP Invalid Configuration"
 
-class SMLMPRecipientError(SMLMPException): pass
-class SendmailError(SMLMPRecipientError): pass
+class SMLMPRecipientError(SMLMPException): report_subject = "SMLMP Recipient Error"
+class SendmailError(SMLMPRecipientError): report_subject = "SMLMP Sendmail Error"

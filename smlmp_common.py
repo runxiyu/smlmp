@@ -19,35 +19,31 @@ from __future__ import annotations
 from typing import Optional, Union
 
 from smlmp_exceptions import *
+from smlmp_smtpdirect import *
 from config import *
 
 import subprocess
 import email
 
+policy = email.policy.SMTP # or the utf-8 variant? TODO
+sendmail = smtp_sendmail
 
-def sendmail(message: Union[bytes, email.message.EmailMessage], force_recipients: list[str] = [], extra_recipients: list[str] = []) -> None:
-    if type(message) is email.message.EmailMessage:
-        message = message.as_bytes()
-    assert type(message) is bytes
-    if force_recipients:
-        p = subprocess.Popen([SENDMAIL_CMD, '-r', LOGNAME + RECIPIENT_DELIMITER + 'bounces@' + DOMAIN ,'-oi'] + force_recipients + extra_recipients, stdin=subprocess.PIPE)
-    else:
-        p = subprocess.Popen([SENDMAIL_CMD, '-r', LOGNAME + RECIPIENT_DELIMITER + 'bounces@' + DOMAIN, '-t', '-oi'] + extra_recipients, stdin=subprocess.PIPE)
-    stdout, stderr = p.communicate(input=message)
-    if p.returncode != 0:
-        raise SendmailError(stderr)
-    else:
-        return
-
-def tell_postmaster(message: Union[bytes, email.message.EmailMessage]) -> None:
-    sendmail(message, force_recipients=[POSTMASTER])
+def tell_postmaster(message: email.message.EmailMessage) -> None:
+    sendmail(message, specified_recipients_only=True, extra_recipients=[POSTMASTER])
     return
 
+def extract_recipient_addresses(message: email.message.EmailMessage) -> list[str]:
+    to_addresses = [address.username + '@' + address.domain for address in message['To'].addresses]
+    cc_addresses = [address.username + '@' + address.domain for address in message['CC'].addresses]
+    return to_addresses + cc_addresses
+
+
 def report_error(e: SMLMPException) -> None:
-    new_message = email.message.EmailMessage()
+    new_message = email.message.EmailMessage(policy=policy)
     new_message['Subject'] = e.report_subject
     new_message['From'] = LOGNAME + '@' + DOMAIN
     new_message['To'] = POSTMASTER
+    new_message.set_content('\n'.join(e.args))
     tell_postmaster(new_message)
 
 def parse_local_address(address: str) -> tuple[str, Optional[str], str]:

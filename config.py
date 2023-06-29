@@ -4,3 +4,5 @@ LOGNAME = 'test'
 DOMAIN = 'andrewyu.org'
 RECIPIENT_DELIMITER = '+'
 POSTMASTER = 'andrew@andrewyu.org'
+SMTPHOST = 'localhost'
+SMTPPORT = 0 # use smtplib default

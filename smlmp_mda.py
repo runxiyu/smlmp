@@ -33,8 +33,9 @@ def deliver() -> None:
         db = json.load(db_file)
 
     raw_message: bytes = sys.stdin.buffer.read()
-    parsed_message = email.message_from_bytes(raw_message)
-    print(type(parsed_message))
+    parser = email.parser.BytesParser(policy=policy)
+    parsed_message = parser.parsebytes(raw_message)
+    parsed_message.from_bytes(raw_message)
 
     # If any of these tests fail we have a configuration error.
     assert os.environ['MAIL_CONFIG'] == '/etc/postfix'
@@ -46,15 +47,15 @@ def deliver() -> None:
 
     # If the email is directly sent to the mailing list management user, it's unsolicited mail, so let's just throw it to the postmaster.
     if list_name == LOGNAME:
-        sendmail(raw_message, force_recipients=[POSTMASTER])
+        sendmail(parsed_message, specified_recipients_only=True, extra_recipients=[POSTMASTER])
         return
 
     if list_name not in db:
         raise SMLMPInvalidConfiguration("I was asked to handle email for %s but I wasn't configured to do so. You have a broken Postfix or SMLMP configuration." % list_name)
 
-    # Sanitize message
-    parsed_message['Return-Path'] = LOGNAME + RECIPIENT_DELIMITER + 'bounces@' + DOMAIN # TODO: Does this even work? Apparently not, use postfix mapping.
-    sendmail(parsed_message, force_recipients=db[list_name][members])
+    # Sanitize message TODO
+
+    sendmail(parsed_message, specified_recipients_only=True, extra_recipients=db[list_name]["members"])
 
 
 if __name__ == '__main__':
