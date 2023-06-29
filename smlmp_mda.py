@@ -26,6 +26,7 @@ import sys
 import os
 import email
 import email.parser
+import email.policy
 import subprocess
 import json
 

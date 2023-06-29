@@ -23,6 +23,7 @@ from config import *
 
 import subprocess
 import email
+import email.policy
 import smtplib
 
 policy = email.policy.SMTP # or the utf-8 variant? TODO
