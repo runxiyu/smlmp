@@ -20,6 +20,7 @@ from __future__ import annotations
 class SMLMPException(Exception): pass
 
 class SMLMPCriticalError(SMLMPException): pass
+class SMLMPInvalidConfiguration(SMLMPCriticalError): pass
 
 class SMLMPRecipientError(SMLMPException): pass
 class SendmailError(SMLMPRecipientError): pass

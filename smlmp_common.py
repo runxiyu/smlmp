@@ -16,7 +16,7 @@
 #
 
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Union
 
 from smlmp_exceptions import *
 from config import *
@@ -25,16 +25,30 @@ import subprocess
 import email
 
 
-def sendmail(message: bytes, force_recipients: list[str] = [], extra_recipients: list[str] = []) -> None:
+def sendmail(message: Union[bytes, email.message.EmailMessage], force_recipients: list[str] = [], extra_recipients: list[str] = []) -> None:
+    if type(message) is email.message.EmailMessage:
+        message = message.as_bytes()
+    assert type(message) is bytes
     if force_recipients:
-        p = subprocess.Popen([SENDMAIL_CMD, '-oi'] + force_recipients + extra_recipients, stdin=subprocess.PIPE)
+        p = subprocess.Popen([SENDMAIL_CMD, '-r', LOGNAME + RECIPIENT_DELIMITER + 'bounces@' + DOMAIN ,'-oi'] + force_recipients + extra_recipients, stdin=subprocess.PIPE)
     else:
-        p = subprocess.Popen([SENDMAIL_CMD, '-t', '-oi'] + extra_recipients, stdin=subprocess.PIPE)
+        p = subprocess.Popen([SENDMAIL_CMD, '-r', LOGNAME + RECIPIENT_DELIMITER + 'bounces@' + DOMAIN, '-t', '-oi'] + extra_recipients, stdin=subprocess.PIPE)
     stdout, stderr = p.communicate(input=message)
     if p.returncode != 0:
         raise SendmailError(stderr)
     else:
         return
+
+def tell_postmaster(message: Union[bytes, email.message.EmailMessage]) -> None:
+    sendmail(message, force_recipients=[POSTMASTER])
+    return
+
+def report_error(e: SMLMPException) -> None:
+    new_message = email.message.EmailMessage()
+    new_message['Subject'] = e.report_subject
+    new_message['From'] = LOGNAME + '@' + DOMAIN
+    new_message['To'] = POSTMASTER
+    tell_postmaster(new_message)
 
 def parse_local_address(address: str) -> tuple[str, Optional[str], str]:
     if RECIPIENT_DELIMITER in address:

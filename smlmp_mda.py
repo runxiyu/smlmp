@@ -26,8 +26,12 @@ import sys
 import os
 import email
 import subprocess
+import json
 
 def deliver() -> None:
+    with open("db.json", "r") as db_file:
+        db = json.load(db_file)
+
     raw_message: bytes = sys.stdin.buffer.read()
     parsed_message = email.message_from_bytes(raw_message)
     print(type(parsed_message))
@@ -45,12 +49,16 @@ def deliver() -> None:
         sendmail(raw_message, force_recipients=[POSTMASTER])
         return
 
-    # TODO: Reject BCC's.
+    if list_name not in db:
+        raise SMLMPInvalidConfiguration("I was asked to handle email for %s but I wasn't configured to do so. You have a broken Postfix or SMLMP configuration." % list_name)
 
-    # TODO: Check which list it's from
-    # TODO: Email
-
+    # Sanitize message
+    parsed_message['Return-Path'] = LOGNAME + RECIPIENT_DELIMITER + 'bounces@' + DOMAIN # TODO: Does this even work? Apparently not, use postfix mapping.
+    sendmail(parsed_message, force_recipients=db[list_name][members])
 
 
 if __name__ == '__main__':
-    deliver()
+    try:
+        deliver()
+    except SMLMPException as e:
+        report_error(e)
