@@ -31,7 +31,7 @@ import subprocess
 import json
 
 def deliver() -> None:
-    with open("db.json", "r") as db_file:
+    with open(PATH_TO_DBJSON, "r") as db_file:
         db = json.load(db_file)
 
     raw_message: bytes = sys.stdin.buffer.read()
