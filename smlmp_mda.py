@@ -25,6 +25,7 @@ from smlmp_common import *
 import sys
 import os
 import email
+import email.parser
 import subprocess
 import json
 
@@ -33,9 +34,8 @@ def deliver() -> None:
         db = json.load(db_file)
 
     raw_message: bytes = sys.stdin.buffer.read()
-    parser = email.parser.BytesParser(policy=policy)
-    parsed_message = parser.parsebytes(raw_message)
-    parsed_message.from_bytes(raw_message)
+    parsed_message = email.message_from_bytes(raw_message, policy=policy)
+    assert type(parsed_message) is email.message.EmailMessage
 
     # If any of these tests fail we have a configuration error.
     assert os.environ['MAIL_CONFIG'] == '/etc/postfix'

@@ -19,14 +19,24 @@ from __future__ import annotations
 from typing import Optional, Union
 
 from smlmp_exceptions import *
-from smlmp_smtpdirect import *
 from config import *
 
 import subprocess
 import email
+import smtplib
 
 policy = email.policy.SMTP # or the utf-8 variant? TODO
-sendmail = smtp_sendmail
+
+
+def sendmail(message: email.message.EmailMessage, specified_recipients_only:bool=False, extra_recipients: list[str] = []) -> None:
+    bounce_address = LOGNAME + RECIPIENT_DELIMITER + 'bounces@' + DOMAIN
+    conn = smtplib.SMTP()
+    conn.connect(SMTPHOST, SMTPPORT)
+    if specified_recipients_only:
+        recipients = extra_recipients
+    else:
+        recipients = extra_recipients + extract_recipient_addresses(message)
+    conn.send_message(message, from_addr=bounce_address, to_addrs=recipients)
 
 def tell_postmaster(message: email.message.EmailMessage) -> None:
     sendmail(message, specified_recipients_only=True, extra_recipients=[POSTMASTER])
