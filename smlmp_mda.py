@@ -19,7 +19,7 @@
 
 from __future__ import annotations
 
-from config import *
+from smlmp_sanitized_config import *
 from smlmp_common import *
 
 import sys
@@ -35,8 +35,8 @@ def deliver() -> None:
         db = json.load(db_file)
 
     raw_message: bytes = sys.stdin.buffer.read()
-    parsed_message = email.message_from_bytes(raw_message, policy=policy)
-    assert type(parsed_message) is email.message.EmailMessage
+    msg = email.message_from_bytes(raw_message, policy=policy)
+    assert type(msg) is email.message.EmailMessage
 
     # If any of these tests fail we have a configuration error.
     assert os.environ['MAIL_CONFIG'] == '/etc/postfix'
@@ -44,19 +44,25 @@ def deliver() -> None:
     assert os.environ['DOMAIN'] == DOMAIN
 
     receiving_address = os.environ['ORIGINAL_RECIPIENT']
-    list_name, extension, _ = parse_local_address(receiving_address)
+    list_name, extension, receiving_address_domain = parse_local_address(receiving_address)
+
+    if receiving_address_domain != DOMAIN:
+        raise SMLMPInvalidConfiguration("ORIGINAL_RECIPIENT's domain %s is not the DOMAIN %s configured in config.py." % (receiving_address_domain, DOMAIN))
+    del receiving_address_domain
 
     # If the email is directly sent to the mailing list management user, it's unsolicited mail, so let's just throw it to the postmaster.
     if list_name == LOGNAME:
-        sendmail(parsed_message, specified_recipients_only=True, extra_recipients=[POSTMASTER])
+        sendmail(msg, specified_recipients_only=True, extra_recipients=[POSTMASTER])
         return
 
     if list_name not in db:
         raise SMLMPInvalidConfiguration("I was asked to handle email for %s but I wasn't configured to do so. You have a broken Postfix or SMLMP configuration." % list_name)
 
     # Sanitize message TODO
+    msg["List-Post"] = "<" + list_name @ DOMAIN + ">"
+    msg["List-Help"] = "<" + HTTP_ROOT + ">"
 
-    sendmail(parsed_message, specified_recipients_only=True, extra_recipients=db[list_name]["members"])
+    sendmail(msg, specified_recipients_only=True, extra_recipients=db[list_name]["members"])
 
 
 if __name__ == '__main__':

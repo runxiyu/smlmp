@@ -19,7 +19,7 @@ from __future__ import annotations
 from typing import Optional, Union
 
 from smlmp_exceptions import *
-from config import *
+from smlmp_sanitized_config import *
 
 import subprocess
 import email
