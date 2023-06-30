@@ -31,7 +31,6 @@ v1.1
 - What does DMARC actually hash?
 - Discard unsupported headers
   
-
 v1.2
 - Archival system
 - Archival system basic Web interface (flask?)
