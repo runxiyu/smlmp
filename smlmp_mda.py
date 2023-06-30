@@ -73,15 +73,15 @@ def deliver() -> None:
                 % list_name
             )
 
-            handle_mail_addressed_to_list(
-                msg,
-                list_name=list_name,
-                list_config=db[list_name],
-                extension=extension,
-                DOMAIN=DOMAIN,
-                LOGNAME=LOGNAME,
-                receiving_address=receiving_address,
-            )
+        handle_mail_addressed_to_list(
+            msg,
+            list_name=list_name,
+            list_config=db[list_name],
+            extension=extension,
+            DOMAIN=DOMAIN,
+            LOGNAME=LOGNAME,
+            receiving_address=receiving_address,
+        )
 
     except SMLMPSenderError as e:
         return_path = msg["Return-Path"][1:-1]
