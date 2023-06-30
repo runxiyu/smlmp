@@ -18,7 +18,7 @@ v1.0 (released)
 v1.1
 - Sender validation: Allow lists to configure if they accept emails from
   everyone, just list members, or just moderators
-- List-related headers
++ List-related headers
   - List-Help: <https://example.org/whatever>
   - List-Unsubscribe: <mailto:list+unsubscribe@example.org?subject=unsubscribe>
   - List-Subscribe: <mailto:list+subscribe@example.org?subject=subscribe>
@@ -27,9 +27,8 @@ v1.1
   - List-Owner: <mailto:someone@example.org>
   - List-Archive: <https://example.org/whatever>
   - List-ID
-- Subject prefix
 - Action addresses (+subscribe, etc)
-- DMARC: Carefully track header changes, never touch message content
++ DMARC: Carefully track header changes, never touch message content
 - Discard unsupported headers?
   
 v1.2

@@ -18,9 +18,11 @@
 #
 
 from __future__ import annotations
+from typing import Union, Any
 
 from smlmp_sanitized_config import *
 from smlmp_common import *
+from smlmp_dkim import *
 
 import sys
 import os
@@ -94,7 +96,7 @@ def deliver() -> None:
 
 
 def handle_mail_addressed_to_list(
-    msg, list_name, list_config, extension, DOMAIN, LOGNAME, receiving_address
+        msg: email.message.EmailMessage, list_name: str, list_config: dict[str, Any], extension: str, DOMAIN: str, LOGNAME: str, receiving_address: str
 ) -> None:
     if extension:
         # TODO Implement action addresses based on extensions
@@ -106,14 +108,19 @@ def handle_mail_addressed_to_list(
 
     if not msg["DKIM-Signature"]:
         raise SMLMPSenderError("Your email does not have a DKIM Signature.")
-    elif not pydkim.verify(msg.as_bytes()):
+    elif not dkim.verify(msg.as_bytes()):
         raise SMLMPSenderError("Your email does not pass DKIM.")
+
+    dkim_include_headers, dkim_tags = parse_dkim_header(msg["DKIM-Signature"])
 
     # TODO Sanitize message
 
     # TODO Track headers that we are modifying; if we are attempting to modify DKIM h=
+    force_munge_headers = {"list-post", "list-help", "list-subscribe", "list-unsubscribe", "list-archive", "list-owner", "list-id", "sender", "list-unsubscribe-post"} # must be lowercase
+    if dkim_include_headers.intersection(force_munge_headers):
+        raise SMLMPSenderError("Please do not include any of %s in your DKIM h= tag. This makes it impossible for the mailing list program to add list-related headers properly." % str(force_munge_headers))
 
-    if db[list_name]["announcements-only"]:
+    if list_config["announcements-only"]:
         msg["List-Post"] = "NO"
     else:
         msg["List-Post"] = "<" + list_name + "@" + DOMAIN + ">"
@@ -126,7 +133,7 @@ def handle_mail_addressed_to_list(
         "<" + list_name + RECIPIENT_DELIMITER + "unsubscribe@" + DOMAIN + ">"
     )
     msg["List-Archive"] = "<" + HTTP_ROOT + list_name + "/archive" + ">"
-    msg["List-Owner"] = "<" + db[list_name]["owner"] + ">"
+    msg["List-Owner"] = "<" + list_config["owner"] + ">"
     msg["List-ID"] = list_name
     msg["Sender"] = list_name + RECIPIENT_DELIMITER + "bounces@" + DOMAIN  # Or LOGNAME?
     del msg[
@@ -134,7 +141,7 @@ def handle_mail_addressed_to_list(
     ]  # We do not follow RFC8058, but we still need to sanitize these headers.
 
     sendmail(
-        msg, specified_recipients_only=True, extra_recipients=db[list_name]["members"]
+        msg, specified_recipients_only=True, extra_recipients=list_config["members"]
     )
 
 

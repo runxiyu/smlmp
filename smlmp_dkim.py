@@ -34,7 +34,7 @@ import email.policy
 
 policy = email.policy.SMTP.clone(refold_source="none")
 
-def parse_dkim_header(dkim_header: str) -> tuple[str, str, set[str], dict[str, str]]:
+def parse_dkim_header(dkim_header: str) -> tuple[set[str], dict[str, str]]:
     tags = {}
     tag_specs = dkim_header.strip().split(';')
     # Trailing semicolons are valid.
@@ -50,7 +50,5 @@ def parse_dkim_header(dkim_header: str) -> tuple[str, str, set[str], dict[str, s
         if key in tags:
             raise SMLMPParseError("duplicate tag", key)
         tags[key] = value
-    dkim_domain = tags['d']
-    dkim_selector = tags['s']
     dkim_include_headers = set([x.lower() for x in re.split(r"\s*:\s*", tags['h'])])
-    return dkim_domain, dkim_selector, dkim_include_headers, tags
+    return dkim_include_headers, tags

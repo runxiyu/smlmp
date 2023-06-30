@@ -4,12 +4,14 @@
 		"link-out": "https://evosaur.andrewyu.org/",
 		"archive": true,
 		"members": ["andrew@andrewyu.org", "hax@andrewyu.org"],
-		"owner" : "andrew@andrewyu.org"
+		"owner" : "andrew@andrewyu.org",
+		"announcements-only": false
 	},
 	"fases-dev": {
 		"description": "The Fases Core Utilities Project's development mailing list.",
 		"link-out": "https://utils.vitali64.duckdns.org/",
 		"archive": true,
+		"announcements-only": false,
 		"members": ["vitali64pmemail@protonmail.com", "info@minifree.org", "aryak@vern.cc", "andrew@andrewyu.org"],
 		"owner" : "vitali64pmemail@protonmail.com"
 	},
@@ -18,6 +20,7 @@
 		"link-out": "https://www.andrewyu.ogr/",
 		"archive": true,
 		"members": ["fun@andrewyu.org", "hax@andrewyu.org", "andrew@andrewyu.org", "andrew+test1@andrewyu.org", "andrew+test2@andrewyu.org", "noisytoot@andrewyu.org", "luk3yx@andrewyu.org"],
+		"announcements-only": false,
 		"owner" : "andrew@andrewyu.org"
 	}
 }
