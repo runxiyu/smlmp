@@ -111,7 +111,7 @@ def handle_mail_addressed_to_list(
     if list_config["allowed_senders"] == "members":
         if from_address not in list_config["members"]:
             raise SMLMPSenderError("Only list members may post to this list.")
-    elif list_config["allowed_senders"] == "moderators"
+    elif list_config["allowed_senders"] == "moderators":
         if from_address not in list_config["moderators"]:
             raise SMLMPSenderError("Only list moderators may post to this list.")
     else:
