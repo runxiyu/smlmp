@@ -16,20 +16,21 @@ v1.0 (released)
 + Basic forwarding of incoming mail that match configured lists
 
 v1.1
-- Sender validation: Allow lists to configure if they accept emails from
++ Sender validation: Allow lists to configure if they accept emails from
   everyone, just list members, or just moderators
 + List-related headers
-  - List-Help: <https://example.org/whatever>
+  + List-Help: <https://example.org/whatever>
+  + List-Unsubscribe: <mailto:list+unsubscribe@example.org?subject=unsubscribe>
+  + List-Subscribe: <mailto:list+subscribe@example.org?subject=subscribe>
+  + List-Post: <mailto:list@example.org>
+  + List-Post: NO # for announcement lists
+  + List-Owner: <mailto:someone@example.org>
+  + List-Archive: <https://example.org/whatever>
+  + List-ID
+- Action addresses:
   - List-Unsubscribe: <mailto:list+unsubscribe@example.org?subject=unsubscribe>
   - List-Subscribe: <mailto:list+subscribe@example.org?subject=subscribe>
-  - List-Post: <mailto:list@example.org>
-  - List-Post: NO # for announcement lists
-  - List-Owner: <mailto:someone@example.org>
-  - List-Archive: <https://example.org/whatever>
-  - List-ID
-- Action addresses (+subscribe, etc)
 + DMARC: Carefully track header changes, never touch message content
-- Discard unsupported headers?
   
 v1.2
 - Archival system

@@ -4,7 +4,9 @@
 		"link-out": "https://evosaur.andrewyu.org/",
 		"archive": true,
 		"members": ["andrew@andrewyu.org", "hax@andrewyu.org"],
+		"moderators": ["andrew@andrewyu.org", "hax@andrewyu.org"],
 		"owner" : "andrew@andrewyu.org",
+		"allowed_senders" : "members",
 		"announcements-only": false
 	},
 	"fases-dev": {
@@ -13,6 +15,8 @@
 		"archive": true,
 		"announcements-only": false,
 		"members": ["vitali64pmemail@protonmail.com", "info@minifree.org", "aryak@vern.cc", "andrew@andrewyu.org"],
+		"moderators" : ["vitali64pmemail@protonmail.com"],
+		"allowed_senders" : "anyone",
 		"owner" : "vitali64pmemail@protonmail.com"
 	},
 	"test-list": {
@@ -20,6 +24,8 @@
 		"link-out": "https://www.andrewyu.ogr/",
 		"archive": true,
 		"members": ["fun@andrewyu.org", "hax@andrewyu.org", "andrew@andrewyu.org", "andrew+test1@andrewyu.org", "andrew+test2@andrewyu.org", "noisytoot@andrewyu.org", "luk3yx@andrewyu.org"],
+		"moderators": ["andrew@andrewyu.org"],
+		"allowed_senders" : "moderators",
 		"announcements-only": false,
 		"owner" : "andrew@andrewyu.org"
 	}

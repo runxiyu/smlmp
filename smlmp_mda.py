@@ -105,6 +105,18 @@ def handle_mail_addressed_to_list(
         )
 
     # The absence of an extension means that the incoming mail is posted to the main list address. We then check and deliver the message.
+    if len(message["From"].addresses) != 1:
+        raise SMLMPSenderError("You must use one and only one address in the From header.")
+    from_address = message["From"].addresses[0].username + "@" + message["From"].addresses[0].domain
+    if list_config["allowed_senders"] == "members":
+        if from_address not in list_config["members"]:
+            raise SMLMPSenderError("Only list members may post to this list.")
+    elif list_config["allowed_senders"] == "moderators"
+        if from_address not in list_config["moderators"]:
+            raise SMLMPSenderError("Only list moderators may post to this list.")
+    else:
+        if list_config["allowed_senders"] != "anyone":
+            raise SMLMPInvalidConfiguration("allowed_senders must be one of 'anyone', 'moderators' and 'members'.")
 
     if not msg["DKIM-Signature"]:
         raise SMLMPSenderError("Your email does not have a DKIM Signature.")
