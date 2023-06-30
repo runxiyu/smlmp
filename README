@@ -4,6 +4,10 @@ SMLMP - Simple Mailing List Management Program
 SMLMP is a simple mailing list management program written in Python. It
 is currently incomplete and under development.
 
+Extra Dependencies
+------------------
+dkimpy (python-dkim on Debian)
+
 Release Goals
 -------------
 

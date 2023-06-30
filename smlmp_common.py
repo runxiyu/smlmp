@@ -76,3 +76,4 @@ def parse_local_address(address: str) -> tuple[str, Optional[str], str]:
         list_name, domain = address.rsplit("@", 1)
         extension = None
     return list_name, extension, domain
+

@@ -40,3 +40,6 @@ class SendmailError(SMLMPRecipientError):
 
 class SMLMPSenderError(SMLMPException):
     report_subject = "SMLMP Sender Error"
+
+class SMLMPParseError(SMLMPSenderError):
+    report_subject = "SMLMP Parse Error"

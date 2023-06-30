@@ -27,6 +27,7 @@ import os
 import email
 import subprocess
 import json
+import dkim
 
 
 def deliver() -> None:
@@ -105,6 +106,8 @@ def handle_mail_addressed_to_list(
 
     if not msg["DKIM-Signature"]:
         raise SMLMPSenderError("Your email does not have a DKIM Signature.")
+    elif not pydkim.verify(msg.as_bytes()):
+        raise SMLMPSenderError("Your email does not pass DKIM.")
 
     # TODO Sanitize message
 
