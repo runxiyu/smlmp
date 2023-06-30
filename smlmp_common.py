@@ -26,7 +26,7 @@ import email
 import email.policy
 import smtplib
 
-policy = email.policy.SMTP # or the utf-8 variant? TODO
+policy = email.policy.SMTP.clone(refold_source="none")
 
 
 def sendmail(message: email.message.EmailMessage, specified_recipients_only:bool=False, extra_recipients: list[str] = []) -> None:
