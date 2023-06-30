@@ -22,6 +22,7 @@ v1.1
   - List-Post: NO # for announcement lists
   - List-Owner: <mailto:someone@example.org>
   - List-Archive: <https://example.org/whatever>
+  - List-ID
 - Subject prefix
 - Action addresses (+subscribe, etc)
 - DMARC: For dmarc p=reject and p=quarantine senders, munge their From
@@ -34,6 +35,7 @@ v1.1
 v1.2
 - Archival system
 - Archival system basic Web interface (flask?)
+- Sanitize and check db.json
 
 v1.3
 - Web interface for subscribers (flask?)

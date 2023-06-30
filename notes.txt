@@ -23,3 +23,41 @@ Sendmail
 --------
 -t	Also read recipients from message headers
 -oi	Do not treat single dot on single line as EOF
+
+
+DMARC, DKIM, SPF
+----------------
+Adapted from https://dmarc.org/wiki/FAQ#I_operate_a_mailing_list_and_I_want_to_interoperate_with_DMARC.2C_what_should_I_do.3F
+         and https://docs.mailman3.org/projects/mailman/en/latest/src/mailman/handlers/docs/dmarc-mitigations.html
+
+In DMARC, the From header must match the d= tag in the (valid) DKIM signature for DKIM alignment, and/or match the domain in the MailFrom field for SPF alignment. This poses a problem when we are forwarding mail from senders with dmarc p=reject or p=quarantine.
+
+In these cases, we must take ownership of the email message by changing the From header to one in the mailing list's domain, and add a DKIM signature (which should be done automatically by postfix). Several variations are covered below. I don't know what to choose, maybe let the subscriber choose.
+
+        A. Replace From: address, set Reply-To: to message author
+            Change the RFC5322.From address to an address within the mailing list's domain
+            user@example.com => address@mailinglistdomain.com
+            Set or change the RFC5322.ReplyTo address to the message author
+            Add DKIM signature using the mailing list's domain
+            Pros: Messages from the list could pass SPF, DKIM, and DMARC
+            Cons: Recipients using the Reply feature of their mail clients may expect the reply message to be addressed to the original author.
+            If the list submission address is used, the message recipient may be misdirecting private responses to the mailing list.
+        B. Replace From: address and forward replies
+            Change the RFC5322.From address to a unique per-author address within the mailing list's domain.
+                user@example.com => unique-address@mailinglistdomain.com
+            Add DKIM signature using the mailing list's domain
+            If replies are sent to the unique address, forward them to the associated message author.
+            Pros: Messages from the list could pass SPF, DKIM, and DMARC. Recipients could use their Reply function to reach the author.
+            Cons: List operator must maintain associations of unique addresses to message authors, and forward messages accordingly.
+            If the reply author's domain publishes restrictive email authentication policies, the message operator may have to take additional steps...
+
+
+Additional information is available from a number of other sources:
+
+    How Threadable solved the DMARC problem
+    spamresource.com: Run an email discussion list? Here's how to deal with DMARC
+    How OnlineGroups.net used the Yahoo! DMARC crisis to make a better Mailing List Manager
+    DRAFT: Requirements Doc for MLM Patches to Support Basic DMARC Compliance used to develop changes released in MailMan 2.1.16
+
+
+

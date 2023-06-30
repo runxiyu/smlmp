@@ -50,20 +50,43 @@ def deliver() -> None:
         raise SMLMPInvalidConfiguration("ORIGINAL_RECIPIENT's domain %s is not the DOMAIN %s configured in config.py." % (receiving_address_domain, DOMAIN))
     del receiving_address_domain
 
-    # If the email is directly sent to the mailing list management user, it's unsolicited mail, so let's just throw it to the postmaster.
+    # If the email is directly sent to the mailing list management user, it's unsolicited, so let's just throw it to the postmaster.
     if list_name == LOGNAME:
         sendmail(msg, specified_recipients_only=True, extra_recipients=[POSTMASTER])
         return
 
     if list_name not in db:
         raise SMLMPInvalidConfiguration("I was asked to handle email for %s but I wasn't configured to do so. You have a broken Postfix or SMLMP configuration." % list_name)
+    if not extension:
+        # TODO Implement action addresses based on extensions
+        return
 
-    # Sanitize message TODO
-    msg["List-Post"] = "<" + list_name @ DOMAIN + ">"
-    msg["List-Help"] = "<" + HTTP_ROOT + ">"
+    # The absence of an extension means that the incoming mail is posted to the main list address. We then check and deliver the message.
 
+    
+
+    # TODO Sanitize message
+
+
+    if db[list_name]["announcements-only"]:
+        msg["List-Post"] = "NO"
+    else:
+        msg["List-Post"] = "<" + list_name + "@" + DOMAIN + ">"
+
+
+    msg["List-Help"] = "<" + HTTP_ROOT + list_name + ">"
+    msg["List-Subscribe"] = "<" + list_name + RECIPIENT_DELIMITER + "subscribe@" + DOMAIN + ">"
+    msg["List-Unsubscribe"] = "<" + list_name + RECIPIENT_DELIMITER + "unsubscribe@" + DOMAIN + ">"
+    msg["List-Archive"] = "<" + HTTP_ROOT + list_name + "/archive" + ">"
+    msg["List-Owner"] = "<" + db[list_name]["owner"] + ">"
+    msg["List-ID"] = list_name
+    msg["Sender"] = list_name + RECIPIENT_DELIMITER + "bounces@" + DOMAIN # Or LOGNAME?
+    del msg["List-Unsubscribe-Post"] # We do not follow RFC8058, but we still need to sanitize these headers.
+
+    # TODO: Check sender's DMARC policy (how? I don't seem to be getting this info from my postfix installation and it would be redundent to do DNS lookups myeslf)
+    # If it's p=none, send email normally.
     sendmail(msg, specified_recipients_only=True, extra_recipients=db[list_name]["members"])
-
+    # If it's reject or quarantine, then: send different batches of email for subscribers, one batch for each dmarc munge setting
 
 if __name__ == '__main__':
     try:
