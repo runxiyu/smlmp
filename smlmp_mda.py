@@ -105,9 +105,9 @@ def handle_mail_addressed_to_list(
         )
 
     # The absence of an extension means that the incoming mail is posted to the main list address. We then check and deliver the message.
-    if len(message["From"].addresses) != 1:
+    if len(msg["From"].addresses) != 1:
         raise SMLMPSenderError("You must use one and only one address in the From header.")
-    from_address = message["From"].addresses[0].username + "@" + message["From"].addresses[0].domain
+    from_address = msg["From"].addresses[0].username + "@" + msg["From"].addresses[0].domain
     if list_config["allowed_senders"] == "members":
         if from_address not in list_config["members"]:
             raise SMLMPSenderError("Only list members may post to this list.")

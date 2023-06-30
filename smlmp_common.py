@@ -52,10 +52,10 @@ def tell_postmaster(message: email.message.EmailMessage) -> None:
 def extract_recipient_addresses(message: email.message.EmailMessage) -> list[str]:
     to_addresses = [
         address.username + "@" + address.domain for address in message["To"].addresses
-    ]
+    ] if message["To"] else []
     cc_addresses = [
         address.username + "@" + address.domain for address in message["CC"].addresses
-    ]
+    ] if message["To"] else []
     return to_addresses + cc_addresses
 
 
