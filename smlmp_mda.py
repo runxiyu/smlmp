@@ -46,11 +46,6 @@ def deliver() -> None:
 
     try:
         receiving_address = os.environ["ORIGINAL_RECIPIENT"]
-        if receiving_address not in extract_recipient_addresses(msg):
-            raise SMLMPSenderError(
-                "BCCing or otherwise sending emails to the mailing list services without the list's address being in To or CC headers is unsupported."
-            )
-
         list_name, extension, receiving_address_domain = parse_local_address(
             receiving_address
         )
@@ -67,11 +62,18 @@ def deliver() -> None:
             sendmail(msg, specified_recipients_only=True, extra_recipients=[POSTMASTER])
             return
 
+
         if list_name not in db:
             raise SMLMPInvalidConfiguration(
                 "I was asked to handle email for %s but I wasn't configured to do so. You have a broken Postfix or SMLMP configuration."
                 % list_name
             )
+
+        if receiving_address not in extract_recipient_addresses(msg):
+            raise SMLMPSenderError(
+                "BCCing or otherwise sending emails to the mailing list services without the list's address being in To or CC headers is unsupported."
+            )
+
 
         handle_mail_addressed_to_list(
             msg,
