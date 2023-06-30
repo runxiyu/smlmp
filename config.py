@@ -1,4 +1,4 @@
-LOGNAME = "test"
+LOGNAME = "smlmp"
 DOMAIN = "andrewyu.org"
 RECIPIENT_DELIMITER = "+"
 POSTMASTER = "andrew@andrewyu.org"
