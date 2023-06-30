@@ -55,7 +55,7 @@ def extract_recipient_addresses(message: email.message.EmailMessage) -> list[str
     ] if message["To"] else []
     cc_addresses = [
         address.username + "@" + address.domain for address in message["CC"].addresses
-    ] if message["To"] else []
+    ] if message["CC"] else []
     return to_addresses + cc_addresses
 
 
