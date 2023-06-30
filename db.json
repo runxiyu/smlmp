@@ -10,7 +10,7 @@
 		"announcements-only": false
 	},
 	"fases-dev": {
-		"description": "The Fases Core Utilities Project's development mailing list.",
+		"description": "The fases Core Utilities Project's development mailing list.",
 		"link-out": "https://utils.vitali64.duckdns.org/",
 		"archive": true,
 		"announcements-only": false,
@@ -24,7 +24,7 @@
 		"link-out": "https://www.andrewyu.ogr/",
 		"archive": true,
 		"members": ["fun@andrewyu.org", "hax@andrewyu.org", "andrew@andrewyu.org", "andrew+test1@andrewyu.org", "andrew+test2@andrewyu.org", "noisytoot@andrewyu.org", "luk3yx@andrewyu.org"],
-		"moderators": ["andrew@andrewyu.org"],
+		"moderators": ["fun@andrewyu.org", "hax@andrewyu.org", "andrew@andrewyu.org", "andrew+test1@andrewyu.org", "andrew+test2@andrewyu.org", "noisytoot@andrewyu.org", "luk3yx@andrewyu.org"],
 		"allowed_senders" : "moderators",
 		"announcements-only": false,
 		"owner" : "andrew@andrewyu.org"
