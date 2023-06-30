@@ -28,6 +28,7 @@ import email
 import subprocess
 import json
 
+
 def deliver() -> None:
     with open(PATH_TO_DBJSON, "r") as db_file:
         db = json.load(db_file)
@@ -36,58 +37,107 @@ def deliver() -> None:
     msg = email.message_from_bytes(raw_message, policy=policy)
     assert type(msg) is email.message.EmailMessage
 
-    # If any of these tests fail we have a configuration error.
-    assert os.environ['MAIL_CONFIG'] == '/etc/postfix'
-    assert os.environ['LOGNAME'] == LOGNAME
-    assert os.environ['DOMAIN'] == DOMAIN
+    # If any of these tests fail we have a configuration error
+    assert os.environ["LOGNAME"] == LOGNAME
+    assert os.environ["DOMAIN"] == DOMAIN
 
-    receiving_address = os.environ['ORIGINAL_RECIPIENT']
-    list_name, extension, receiving_address_domain = parse_local_address(receiving_address)
+    try:
+        receiving_address = os.environ["ORIGINAL_RECIPIENT"]
+        if receiving_address not in extract_recipient_addresses(msg):
+            raise SMLMPSenderError(
+                "BCCing or otherwise sending emails to the mailing list services without the list's address being in To or CC headers is unsupported."
+            )
 
-    if receiving_address_domain != DOMAIN:
-        raise SMLMPInvalidConfiguration("ORIGINAL_RECIPIENT's domain %s is not the DOMAIN %s configured in config.py." % (receiving_address_domain, DOMAIN))
-    del receiving_address_domain
+        list_name, extension, receiving_address_domain = parse_local_address(
+            receiving_address
+        )
 
-    # If the email is directly sent to the mailing list management user, it's unsolicited, so let's just throw it to the postmaster.
-    if list_name == LOGNAME:
-        sendmail(msg, specified_recipients_only=True, extra_recipients=[POSTMASTER])
-        return
+        if receiving_address_domain != DOMAIN:
+            raise SMLMPInvalidConfiguration(
+                "ORIGINAL_RECIPIENT's domain %s is not the DOMAIN %s configured in config.py."
+                % (receiving_address_domain, DOMAIN)
+            )
+        del receiving_address_domain
 
-    if list_name not in db:
-        raise SMLMPInvalidConfiguration("I was asked to handle email for %s but I wasn't configured to do so. You have a broken Postfix or SMLMP configuration." % list_name)
-    if not extension:
+        # If the email is directly sent to the mailing list management user, it's unsolicited, so let's just throw it to the postmaster.
+        if list_name == LOGNAME:
+            sendmail(msg, specified_recipients_only=True, extra_recipients=[POSTMASTER])
+            return
+
+        if list_name not in db:
+            raise SMLMPInvalidConfiguration(
+                "I was asked to handle email for %s but I wasn't configured to do so. You have a broken Postfix or SMLMP configuration."
+                % list_name
+            )
+
+            handle_mail_addressed_to_list(
+                msg,
+                list_name=list_name,
+                list_config=db[list_name],
+                extension=extension,
+                DOMAIN=DOMAIN,
+                LOGNAME=LOGNAME,
+                receiving_address=receiving_address,
+            )
+
+    except SMLMPSenderError as e:
+        return_path = msg["Return-Path"][1:-1]
+        newmsg = email.message.EmailMessage(policy=policy)
+        newmsg["To"] = return_path
+        newmsg["Subject"] = e.report_subject
+        newmsg.set_content("\n".join(e.args))
+        sendmail(newmsg)
+
+    except SMLMPException as e:
+        report_error(e)
+
+
+def handle_mail_addressed_to_list(
+    msg, list_name, list_config, extension, DOMAIN, LOGNAME, receiving_address
+) -> None:
+    if extension:
         # TODO Implement action addresses based on extensions
-        return
+        raise SMLMPException(
+            "Oops, extensions in list addresses aren't implemented yet!"
+        )
 
     # The absence of an extension means that the incoming mail is posted to the main list address. We then check and deliver the message.
 
-    
+    if not msg["DKIM-Signature"]:
+        raise SMLMPSenderError("Your email does not have a DKIM Signature.")
 
     # TODO Sanitize message
 
+    # TODO Track headers that we are modifying; if we are attempting to modify DKIM h=
 
     if db[list_name]["announcements-only"]:
         msg["List-Post"] = "NO"
     else:
         msg["List-Post"] = "<" + list_name + "@" + DOMAIN + ">"
 
-
     msg["List-Help"] = "<" + HTTP_ROOT + list_name + ">"
-    msg["List-Subscribe"] = "<" + list_name + RECIPIENT_DELIMITER + "subscribe@" + DOMAIN + ">"
-    msg["List-Unsubscribe"] = "<" + list_name + RECIPIENT_DELIMITER + "unsubscribe@" + DOMAIN + ">"
+    msg["List-Subscribe"] = (
+        "<" + list_name + RECIPIENT_DELIMITER + "subscribe@" + DOMAIN + ">"
+    )
+    msg["List-Unsubscribe"] = (
+        "<" + list_name + RECIPIENT_DELIMITER + "unsubscribe@" + DOMAIN + ">"
+    )
     msg["List-Archive"] = "<" + HTTP_ROOT + list_name + "/archive" + ">"
     msg["List-Owner"] = "<" + db[list_name]["owner"] + ">"
     msg["List-ID"] = list_name
-    msg["Sender"] = list_name + RECIPIENT_DELIMITER + "bounces@" + DOMAIN # Or LOGNAME?
-    del msg["List-Unsubscribe-Post"] # We do not follow RFC8058, but we still need to sanitize these headers.
+    msg["Sender"] = list_name + RECIPIENT_DELIMITER + "bounces@" + DOMAIN  # Or LOGNAME?
+    del msg[
+        "List-Unsubscribe-Post"
+    ]  # We do not follow RFC8058, but we still need to sanitize these headers.
 
-    # TODO: Check sender's DMARC policy (how? I don't seem to be getting this info from my postfix installation and it would be redundent to do DNS lookups myeslf)
-    # If it's p=none, send email normally.
-    sendmail(msg, specified_recipients_only=True, extra_recipients=db[list_name]["members"])
-    # If it's reject or quarantine, then: send different batches of email for subscribers, one batch for each dmarc munge setting
+    sendmail(
+        msg, specified_recipients_only=True, extra_recipients=db[list_name]["members"]
+    )
 
-if __name__ == '__main__':
-    try:
-        deliver()
-    except SMLMPException as e:
-        report_error(e)
+
+if __name__ == "__main__":
+    deliver()
+else:
+    raise Exception(
+        "You shouldn't use smlmp_mda.py as a library. Run it directly by putting it in an alias list for piping."
+    )
