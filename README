@@ -1,4 +1,48 @@
 SMLMP - Simple Mailing List Management Program
+==============================================
 
 SMLMP is a simple mailing list management program written in Python. It
 is currently incomplete and under development.
+
+Release Goals
+-------------
+
+v1.0 (released)
++ Forward bounces to the postmaster
++ Basic forwarding of incoming mail that match configured lists
+
+v1.1
+- Sender validation: Allow lists to configure if they accept emails from
+  everyone, just list members, or just moderators
+- List-related headers
+  - List-Help: <https://example.org/whatever>
+  - List-Unsubscribe: <mailto:list+unsubscribe@example.org?subject=unsubscribe>
+  - List-Subscribe: <mailto:list+subscribe@example.org?subject=subscribe>
+  - List-Post: <mailto:list@example.org>
+  - List-Post: NO # for announcement lists
+  - List-Owner: <mailto:someone@example.org>
+  - List-Archive: <https://example.org/whatever>
+- Subject prefix
+- Action addresses (+subscribe, etc)
+- DMARC: For dmarc p=reject and p=quarantine senders, munge their From
+  address into the list's address, and put their original address in the
+  reply-to. If they already have a reply-to, specify the situation in an
+  attachment?
+- What does DMARC actually hash?
+- Discard unsupported headers
+  
+
+v1.2
+- Archival system
+- Archival system basic Web interface (flask?)
+
+v1.3
+- Web interface for subscribers (flask?)
+- More information
+- Basic CAPTCHA or similar verification system
+
+v1.4
+- Allow emails to be put on a moderation queue, and allow moderators to
+  interact with these emails.
+- Web interface for moderators (flask?)
+- Anti-spam
