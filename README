@@ -27,22 +27,24 @@ v1.1
   + List-Owner: <mailto:someone@example.org>
   + List-Archive: <https://example.org/whatever>
   + List-ID
-- Action addresses:
-  - List-Unsubscribe: <mailto:list+unsubscribe@example.org?subject=unsubscribe>
-  - List-Subscribe: <mailto:list+subscribe@example.org?subject=subscribe>
 + DMARC: Carefully track header changes, never touch message content
   
 v1.2
+- Action addresses:
+  - List-Unsubscribe: <mailto:list+unsubscribe@example.org?subject=unsubscribe>
+  - List-Subscribe: <mailto:list+subscribe@example.org?subject=subscribe>
+
+v1.3
 - Archival system
 - Archival system basic Web interface (flask?)
 - Sanitize and check db.json
 
-v1.3
+v1.4
 - Web interface for subscribers (flask?)
 - More information
 - Basic CAPTCHA or similar verification system
 
-v1.4
+v1.5
 - Allow emails to be put on a moderation queue, and allow moderators to
   interact with these emails.
 - Web interface for moderators (flask?)
