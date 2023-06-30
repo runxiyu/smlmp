@@ -25,12 +25,8 @@ v1.1
   - List-ID
 - Subject prefix
 - Action addresses (+subscribe, etc)
-- DMARC: For dmarc p=reject and p=quarantine senders, munge their From
-  address into the list's address, and put their original address in the
-  reply-to. If they already have a reply-to, specify the situation in an
-  attachment?
-- What does DMARC actually hash?
-- Discard unsupported headers
+- DMARC: Carefully track header changes, never touch message content
+- Discard unsupported headers?
   
 v1.2
 - Archival system
