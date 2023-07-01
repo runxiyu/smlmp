@@ -100,9 +100,9 @@ def extract_recipient_addresses(message: email.message.EmailMessage) -> list[str
     return to_addresses + cc_addresses
 
 
-def report_error(e: SMLMPException) -> None:
+def report_error(e: Exception) -> None:
     new_message = email.message.EmailMessage(policy=policy)
-    new_message["Subject"] = e.report_subject
+    new_message["Subject"] = e.__class__.__name__
     new_message["From"] = config["general"]["localname"] + "@" + config["general"]["domain"]
     new_message["To"] = config["general"]["administrator"]
     new_message.set_content(''.join(traceback.format_exception(e))) # Python 3.10 or above
