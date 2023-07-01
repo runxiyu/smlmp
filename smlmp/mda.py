@@ -78,21 +78,21 @@ def deliver() -> None:
             receiving_address=receiving_address,
         )
 
-    except SMLMPSenderError as e:
-        # Bounce to the user that their message failed, providing a reason.
-        return_path = msg["Return-Path"][1:-1]
-        newmsg = email.message.EmailMessage(policy=policy)
-        newmsg["To"] = return_path
-        newmsg["Subject"] = "Undelivered Mail Returned to Sender"
-        newmsg["From"] = config["general"]["localname"] + config["general"]["recipient_delimiter"] + "bounces@" + config["general"]["domain"]
-        newmsg.set_content("Your email to this mailing list was rejected.\n\n" + "\n".join(e.args))
-        newmsg.add_attachment(raw_message, maintype="message", subtype="rfc822", filename="original.eml")
-        sendmail(newmsg)
-
-    # except SMLMPException as e:
-    except Exception as e:
-        # Tell the administrator that a weird exception has occured.
-        report_error(e)
+#    except SMLMPSenderError as e:
+#        # Bounce to the user that their message failed, providing a reason.
+#        return_path = msg["Return-Path"][1:-1]
+#        newmsg = email.message.EmailMessage(policy=policy)
+#        newmsg["To"] = return_path
+#        newmsg["Subject"] = "Undelivered Mail Returned to Sender"
+#        newmsg["From"] = config["general"]["localname"] + config["general"]["recipient_delimiter"] + "bounces@" + config["general"]["domain"]
+#        newmsg.set_content("Your email to this mailing list was rejected.\n\n" + "\n".join(e.args))
+#        newmsg.add_attachment(raw_message, maintype="message", subtype="rfc822", filename="original.eml")
+#        sendmail(newmsg)
+#
+#    # except SMLMPException as e:
+#    except Exception as e:
+#        # Tell the administrator that a weird exception has occured.
+#        report_error(e)
 
         # Also bounce to the user that their message failed.
         return_path = msg["Return-Path"][1:-1]
