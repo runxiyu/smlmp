@@ -20,7 +20,6 @@
 from __future__ import annotations
 from typing import Union, Any
 
-from smlmp_sanitized_config import *
 from smlmp_common import *
 
 import sys

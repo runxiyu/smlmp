@@ -18,8 +18,10 @@
 from __future__ import annotations
 from typing import Optional, Union
 
-from smlmp_exceptions import *
-from smlmp_sanitized_config import *
+from config import *
+
+if not HTTP_ROOT.endswith("/"):
+    HTTP_ROOT += "/"
 
 import subprocess
 import email
@@ -28,6 +30,32 @@ import smtplib
 import re
 
 policy = email.policy.SMTP.clone(refold_source="none")
+
+class SMLMPException(Exception):
+    report_subject = "SMLMP Exception"
+
+
+class SMLMPCriticalError(SMLMPException):
+    report_subject = "SMLMP Critical Error"
+
+
+class SMLMPInvalidConfiguration(SMLMPCriticalError):
+    report_subject = "SMLMP Invalid Configuration"
+
+
+class SMLMPRecipientError(SMLMPException):
+    report_subject = "SMLMP Recipient Error"
+
+
+class SendmailError(SMLMPRecipientError):
+    report_subject = "SMLMP Sendmail Error"
+
+
+class SMLMPSenderError(SMLMPException):
+    report_subject = "SMLMP Sender Error"
+
+class SMLMPParseError(SMLMPSenderError):
+    report_subject = "SMLMP Parse Error"
 
 
 def sendmail(
