@@ -1,5 +1,6 @@
 {
 	"evosaur-dev": {
+		"shortname": "Evosaur Development List",
 		"description": "The Evosaur Project's development mailing list.",
 		"link-out": "https://evosaur.andrewyu.org/",
 		"archive": true,
@@ -10,22 +11,24 @@
 		"announcements-only": false
 	},
 	"fases-dev": {
+		"shortname": "fases Development List",
 		"description": "The fases Core Utilities Project's development mailing list.",
 		"link-out": "https://utils.vitali64.duckdns.org/",
 		"archive": true,
 		"announcements-only": false,
 		"members": ["vitali64pmemail@protonmail.com", "info@minifree.org", "aryak@vern.cc", "andrew@andrewyu.org", "public-inbox-user@andrewyu.org"],
 		"moderators" : ["vitali64pmemail@protonmail.com"],
-		"allowed_senders" : "anyone",
+		"allowed_senders" : "members",
 		"owner" : "vitali64pmemail@protonmail.com"
 	},
 	"test-list": {
+		"shortname": "Testing List",
 		"description": "Testing mailing list.",
 		"link-out": "https://www.andrewyu.ogr/",
 		"archive": true,
-		"members": ["fun@andrewyu.org", "hax@andrewyu.org", "andrew@andrewyu.org", "andrew+test1@andrewyu.org", "andrew+test2@andrewyu.org", "noisytoot@andrewyu.org", "luk3yx@andrewyu.org", "public-inbox-user@andrewyu.org"],
-		"moderators": ["fun@andrewyu.org", "hax@andrewyu.org", "andrew@andrewyu.org", "andrew+test1@andrewyu.org", "andrew+test2@andrewyu.org", "noisytoot@andrewyu.org", "luk3yx@andrewyu.org"],
-		"allowed_senders" : "moderators",
+		"members": ["fun@andrewyu.org", "hax@andrewyu.org", "andrew@andrewyu.org", "andrew+test1@andrewyu.org", "andrew+test2@andrewyu.org", "noisytoot@andrewyu.org", "luk3yx@andrewyu.org", "public-inbox-user@andrewyu.org", "andrew@noisytoot.org", "andrew@tilde.team"],
+		"moderators": ["fun@andrewyu.org", "hax@andrewyu.org", "andrew@andrewyu.org", "andrew+test1@andrewyu.org", "andrew+test2@andrewyu.org", "noisytoot@andrewyu.org", "luk3yx@andrewyu.org", "andrew@noisytoot.org", "andrew@tilde.team"],
+		"allowed_senders" : "members",
 		"announcements-only": false,
 		"owner" : "andrew@andrewyu.org"
 	}
