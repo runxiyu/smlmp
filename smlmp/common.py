@@ -29,6 +29,7 @@ import email.policy
 import smtplib
 import re
 import traceback
+import sqlite3
 
 def get_config() -> configparser.ConfigParser:
     config = configparser.ConfigParser()
