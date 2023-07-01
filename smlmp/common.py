@@ -22,9 +22,7 @@ import os
 
 def get_config() -> configparser.ConfigParser:
     config = configparser.ConfigParser()
-    if os.path.exists("/etc/smlmp.conf"):
-        config.read("/etc/smlmp.conf")
-    else:
+    if not config.read("/etc/smlmp.conf"): # if unreadable
         raise FileNotFoundError("/etc/smlmp.conf")
     config["general"]["administrator"] = config["general"]["administrator"].lower()
     config["general"]["localname"] = config["general"]["localname"].lower()
