@@ -20,8 +20,8 @@ public-inbox
 ------------
 (This section is unfinished)
 
-Goals
------
+General goals
+-------------
 
 + Forward bounces to the postmaster
 + Basic forwarding of incoming mail that match configured lists
@@ -32,9 +32,13 @@ Goals
 + Archive tag sends it over to public-inbox
 - Action addresses:
   example+unsubscribe@example.org, example+subscribe@example.org
-- Check db.json.lock
 - Web interface for subscribers (flask?)
 - Allow emails to be put on a moderation queue, and allow moderators to
   interact with these emails.
 - Anti-spam
+- Allow reading alternate configuration file via a command-line option
 
+To-do list for details
+----------------------
+- Check db.json.lock to prevent collisions and incomplete reads, when
+  reading or writing the database
