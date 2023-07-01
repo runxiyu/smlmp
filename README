@@ -8,14 +8,11 @@ Extra Dependencies
 ------------------
 dkimpy (python-dkim on Debian)
 
-Release Goals
--------------
+Goals
+-----
 
-v1.0 (released)
 + Forward bounces to the postmaster
 + Basic forwarding of incoming mail that match configured lists
-
-v1.1
 + Sender validation: Allow lists to configure if they accept emails from
   everyone, just list members, or just moderators
 + List-related headers
@@ -28,24 +25,20 @@ v1.1
   + List-Archive: <https://example.org/whatever>
   + List-ID
 + DMARC: Carefully track header changes, never touch message content
-  
-v1.2
++ Archive tag sends it over to public-inbox
 - Action addresses:
   - List-Unsubscribe: <mailto:list+unsubscribe@example.org?subject=unsubscribe>
   - List-Subscribe: <mailto:list+subscribe@example.org?subject=subscribe>
-
-v1.3
-- Archival system
-- Archival system basic Web interface (flask?)
 - Sanitize and check db.json
-
-v1.4
 - Web interface for subscribers (flask?)
 - More information
 - Basic CAPTCHA or similar verification system
-
-v1.5
 - Allow emails to be put on a moderation queue, and allow moderators to
   interact with these emails.
 - Web interface for moderators (flask?)
 - Anti-spam
+
+Documentation Goals
+-------------------
+- Document how to set up .forward, postfix, etc
+- Document how to set up public-inbox, as it's a bit complicated
