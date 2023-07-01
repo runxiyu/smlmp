@@ -148,7 +148,7 @@ def handle_mail_addressed_to_list(
     )
     msg["List-Archive"] = "<" + HTTP_ROOT + list_name + "/archive" + ">"
     msg["List-Owner"] = "<" + list_config["owner"] + ">"
-    msg["List-ID"] = list_config["shortname"] + " <" + list_name + ".lists." + DOMAIN ">"
+    msg["List-ID"] = list_config["shortname"] + " <" + list_name + ".lists." + DOMAIN + ">"
     msg["Sender"] = list_name + RECIPIENT_DELIMITER + "bounces@" + DOMAIN  # Or LOGNAME?
     del msg[
         "List-Unsubscribe-Post"
