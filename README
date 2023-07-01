@@ -4,9 +4,21 @@ SMLMP - Simple Mailing List Management Program
 SMLMP is a simple mailing list management program written in Python. It
 is currently incomplete and under development.
 
-Extra Dependencies
-------------------
-dkimpy (python-dkim on Debian)
+Dependencies
+------------
+* dkimpy (python-dkim on Debian)
+* Python 3.10 or above
+  This means that this program will not work on Debian 11 bullseye and
+  lower. Upgrade your system.
+
+Setup
+-----
+(This section is unfinished)
+* Username running the MDA must be in full lowercase
+
+public-inbox
+------------
+(This section is unfinished)
 
 Goals
 -----
@@ -26,7 +38,3 @@ Goals
   interact with these emails.
 - Anti-spam
 
-Documentation Goals
--------------------
-- Document how to set up .forward, postfix, etc
-- Document how to set up public-inbox

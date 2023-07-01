@@ -1,0 +1,66 @@
+# SMLMP configuration file
+# 
+# This file is expected to be at /etc/smlmp.conf. This example
+# configuration file explains what the settings mean, and provides the
+# defaults that are used on andrewy.org's mailing list system.
+#
+# Everything is treated as a string. Multiline is allowed, followup
+# lines must be indented. Comments begin with "#" or ";".
+
+[general]
+
+# The address extension delimiter used for postfix sub-addressing. This
+# should match the recipient_delimiter setting in your postfix main.cf.
+# It must be a single non-alphanumeric character that's valid in email
+# addresses.
+recipient_delimiter = +
+
+# This is simply the email address of the list server's administrator.
+# When an exception is raised, it is caught by an outer handler, and the
+# formatted exception is sent to the administrator. It is thus important
+# to configure this correctly. Additionally, unsolicited mail directly
+# to the list manager's address is bounced to the administrator, and the
+# administrator's address may be displayed elsewhere in user-facing
+# interfaces.
+administrator = andrew@andrewyu.org
+
+# The path to the list configuration database. Currently, only a sample
+# database is supplied with this program. In the future, the database
+# should be automatically generated through Web and command line
+# interfaces, and wouldn't need to be edited manually.
+database = /srv/smlmp/smlmp/db.json
+
+# What is the Web root of the mailing list's public-facing HTTP server?
+# (The HTTP server part of SMLMP is still under development.)
+# Most people would run the sever behind reverse proxies, just make sure
+# you set the user-facing URL root here.
+web_root = https://lists.mail.andrewyu.org/
+
+# What is the local part of the address that SMLMP handles? This is used
+# to check the validity of incoming mail, and is used (with the
+# "bounces" address extension) when sending mail, as the envelope from
+# address, and the "Sender" header in list posts.
+localname = smlmp
+
+# What is the domain part of the email address that SMLMP handles?
+domain = andrewyu.org
+
+# What host and port should be used to connect to an SMTP server to send
+# mail? Since it is only supported to run this program on the same
+# system that runs the email server, the following defaults should
+# suffice. Note that setting smtp_port to 0 means smtplib will use its
+# default.
+smtp_host = localhost
+smtp_port = 0
+
+[delivery agent]
+
+# What is the address of the archiving system? When an email is
+# processed on a list with archive=true, it will forwarded to this
+# address for archiving. See the public-inbox section of the SMLMP
+# README for suggestions on setting up public-inbox for archiving.
+archiver_address = public-inbox-user@andrewyu.org
+
+[web interface]
+
+listen_address = 
