@@ -97,13 +97,13 @@ def report_error(e: SMLMPException) -> None:
     tell_postmaster(new_message)
 
 
-def parse_local_address(address: str) -> tuple[str, Optional[str], str]:
+def parse_local_address(address: str) -> tuple[str, str, str]:
     if RECIPIENT_DELIMITER in address:
         list_name, remaining = address.split(RECIPIENT_DELIMITER, 1)
         extension, domain = remaining.rsplit("@", 1)
     else:
         list_name, domain = address.rsplit("@", 1)
-        extension = None
+        extension = ""
     return list_name, extension, domain
 
 def parse_dkim_header(dkim_header: str) -> tuple[set[str], dict[str, str]]:
