@@ -144,7 +144,10 @@ def handle_mail_addressed_to_list(
     msg["List-Unsubscribe"] = (
         "<" + list_name + RECIPIENT_DELIMITER + "unsubscribe@" + DOMAIN + ">"
     )
-    msg["List-Archive"] = "<" + HTTP_ROOT + list_name + "/archive" + ">"
+    if list_config["archive"]:
+        msg["List-Archive"] = "<" + HTTP_ROOT + list_name + "/archive" + ">"
+    else:
+        del msg["List-Archive"]
     msg["List-Owner"] = "<" + list_config["owner"] + ">"
     msg["List-ID"] = list_config["shortname"] + " <" + list_name + ".lists." + DOMAIN + ">"
     msg["Sender"] = list_name + RECIPIENT_DELIMITER + "bounces@" + DOMAIN  # Or LOGNAME?
@@ -155,6 +158,10 @@ def handle_mail_addressed_to_list(
     sendmail(
         msg, specified_recipients_only=True, extra_recipients=list_config["members"]
     )
+    if list_config["archive"]:
+        sendmail(
+            msg, specified_recipients_only=True, extra_recipients=ARCHIVER_ADDRESS
+        )
 
 
 if __name__ == "__main__":
