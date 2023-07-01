@@ -20,7 +20,7 @@
 from __future__ import annotations
 from typing import Union, Any
 
-from smlmp.common import *
+from .common import *
 
 import sys
 import os
