@@ -19,6 +19,16 @@ from __future__ import annotations
 from typing import Optional, Union
 import configparser
 import os
+import time
+import pathlib
+import subprocess
+import errno
+import fcntl
+import email
+import email.policy
+import smtplib
+import re
+import traceback
 
 def get_config() -> configparser.ConfigParser:
     config = configparser.ConfigParser()
@@ -35,12 +45,6 @@ config = get_config()
 if not config["general"]["web_root"].endswith("/"):
     config["general"]["web_root"] += "/"
 
-import subprocess
-import email
-import email.policy
-import smtplib
-import re
-import traceback
 
 policy = email.policy.SMTP.clone(refold_source="none")
 
@@ -71,6 +75,8 @@ class SMLMPSenderError(SMLMPException):
 
 class SMLMPParseError(SMLMPSenderError):
     report_subject = "SMLMP Parse Error"
+class SMLMPLockTimeout(SMLMPException):
+    report_subject = "SMLMP Lock Timeout"
 
 
 def sendmail(
@@ -164,3 +170,22 @@ def parse_dkim_header(dkim_header: str) -> tuple[set[str], dict[str, str]]:
         tags[key] = value
     dkim_include_headers = set([x.lower() for x in re.split(r"\s*:\s*", tags["h"])])
     return dkim_include_headers, tags
+
+# def read_db() -> None:
+#     initial_time = time.time()
+#     timeout = False
+#     while os.exists(config["general"]["database"] + ".write_lock"): 
+#         if time.time() - initial_time < int(config["general"]["lock_timeout"]):
+#             raise SMLMPLockTimeout("Lock not released for more than lock_timeout")
+#     # now we hope that nobody immediatly locks the file again to write (which we can't detect) as we try to read it
+#     with open(config["general"]["database"], "r") as db_file:
+#         db = json.load(db_file)
+#     return db
+
+def read_db() -> None:
+    with open(config["general"]["database"], "r") as db_file:
+        fnctl.flock(x, fnctl.LOCK_EX) # | fnctl.LOCK_NB)
+        db = json.load(db_file)
+        fcntl.flock(db_file, fcntl.LOCK_UN)
+    return db
+# BLOCKS until it could acquire the lock - also we're blocking two reads from happening together

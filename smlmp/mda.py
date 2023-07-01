@@ -32,8 +32,7 @@ import dkim
 
 def deliver() -> None:
     config = get_config()
-    with open(config["general"]["database"], "r") as db_file:
-        db = json.load(db_file)
+    db = read_db()
 
     raw_message: bytes = sys.stdin.buffer.read()
     msg = email.message_from_bytes(raw_message, policy=policy)

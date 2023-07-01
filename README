@@ -6,7 +6,7 @@ is currently incomplete and under development.
 
 Dependencies
 ------------
-* dkimpy (python-dkim on Debian)
+* dkimpy (python3-dkim on Debian)
 * Python 3.10 or above
   This means that this program will not work on Debian 11 bullseye and
   lower. Upgrade your system.
@@ -38,7 +38,8 @@ General goals
 - Anti-spam
 - Allow reading alternate configuration file via a command-line option
 
-To-do list for details
-----------------------
-- Check db.json.lock to prevent collisions and incomplete reads, when
-  reading or writing the database
+Bugs
+----
+- There are issues surrounding the locking of database files.
+  common.read_db() needs to consider more edge-cases
+  This is even truer in write_db (not implemented yet)
