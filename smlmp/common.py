@@ -18,10 +18,14 @@
 from __future__ import annotations
 from typing import Optional, Union
 import configparser
+import os
 
 def get_config() -> configparser.ConfigParser:
     config = configparser.ConfigParser()
-    config.read("/etc/smlmp.conf")
+    if os.path.exists("/etc/smlmp.conf"):
+        config.read("/etc/smlmp.conf")
+    else:
+        raise FileNotFoundError("/etc/smlmp.conf")
     config["general"]["administrator"] = config["general"]["administrator"].lower()
     config["general"]["localname"] = config["general"]["localname"].lower()
     config["general"]["domain"] = config["general"]["domain"].lower()
