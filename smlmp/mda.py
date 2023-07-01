@@ -41,7 +41,7 @@ def deliver() -> None:
 
     # If any of these tests fail we have a configuration error
     assert os.environ["LOCAL"] == config["general"]["localname"]
-    assert os.environ["DOMAIIN"] == config["general"]["domain"]
+    assert os.environ["DOMAIN"] == config["general"]["domain"]
 
     try:
         receiving_address = os.environ["ORIGINAL_RECIPIENT"]
