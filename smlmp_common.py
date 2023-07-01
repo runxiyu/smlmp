@@ -109,10 +109,13 @@ def parse_local_address(address: str) -> tuple[str, Optional[str], str]:
 def parse_dkim_header(dkim_header: str) -> tuple[set[str], dict[str, str]]:
     # Adapted from dkimpy, modified from original software
     #
-    # Copyright (C) 2023  Andrew Yu <https://www.andrewyu.org/>
-    # Copyright (C) 2019  Scott Kitterman <scott@kitterman.com>
-    # Copyright (C) 2017  Gene Shuman <gene@valimail.com>
-    # Copyright (C) 2011, 2012 Stuart D. Gathman
+    # This function, parse_dkim_header, is also covered under the following
+    # copyright and license. THIS LICENSE DOES NOT APPLY TO THE ENTIRE PROGRAM.
+    #
+    # Copyright (C) 2023        Andrew Yu <https://www.andrewyu.org/>
+    # Copyright (C) 2019        Scott Kitterman <scott@kitterman.com>
+    # Copyright (C) 2017        Gene Shuman <gene@valimail.com>
+    # Copyright (C) 2011, 2012  Stuart D. Gathman
     #
     # This software is provided 'as-is', without any express or implied
     # warranty.  In no event will the author be held liable for any damages
