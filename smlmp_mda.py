@@ -22,7 +22,6 @@ from typing import Union, Any
 
 from smlmp_sanitized_config import *
 from smlmp_common import *
-from smlmp_dkim import *
 
 import sys
 import os
