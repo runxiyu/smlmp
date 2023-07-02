@@ -1,8 +1,17 @@
 SMLMP - Simple Mailing List Management Program
 ==============================================
 
-SMLMP is a simple mailing list management program written in Python. It
-is currently incomplete and under development.
+SMLMP is a simple mailing list management program designed to be used
+with Postfix. It is written in the Python programming language, but is
+currently incomplete and under development.
+
+WARNING: This program is currently in pre-alpha development quality.
+Do not use it in important production environments. It also hasn't got
+any security audits.
+
+Note to self
+------------
+Remember to delete origin/sqlite3.
 
 Dependencies
 ------------
@@ -16,30 +25,72 @@ Setup
 (This section is unfinished)
 * Username running the MDA must be in full lowercase
 
-public-inbox
-------------
+Setup for public-inbox
+----------------------
 (This section is unfinished)
 
-General goals
--------------
+Implemented features
+--------------------
 
-+ Forward bounces to the postmaster
-+ Basic forwarding of incoming mail that match configured lists
-+ Sender validation: Allow lists to configure if they accept emails from
+* Forward bounces to the postmaster
+* Basic forwarding of incoming mail that match configured lists
+* Sender validation: Allow lists to configure if they accept emails from
   everyone, just list members, or just moderators
-+ List-related headers
-+ DMARC: Carefully track header changes, never touch message content
-+ Archive tag sends it over to public-inbox
-- Action addresses:
+* List-related headers
+* DMARC: Carefully track header changes, never touch message content
+* Archive option sends things over to public-inbox
+
+Untested features
+-----------------
+* Action addresses:
   example+unsubscribe@example.org, example+subscribe@example.org
-- Web interface for subscribers (flask?)
-- Allow emails to be put on a moderation queue, and allow moderators to
+
+Developing features
+-------------------
+None at the moment.
+
+Future features
+---------------
+* Verify DMARC of incoming messages instead of DKIM
+* Web interface for subscribers (flask?)
+* Allow emails to be put on a moderation queue, and allow moderators to
   interact with these emails.
-- Anti-spam
-- Allow reading alternate configuration file via a command-line option
+* Anti-spam
+* Allow reading alternate configuration file via a command-line option
 
 Bugs
 ----
-- There are issues surrounding the locking of database files.
-  common.read_db() needs to consider more edge-cases
-  This is even truer in write_db (not implemented yet)
+* Database-related functions simply block if they cannot acquire the
+  database's file lock. In case another process (other delivery agents,
+  or perhaps the Web interface's backend) crashes (SIGKILL, segmentation
+  fault, etc; SIGTERM shouldn't cause problems as I put the unlocking
+  mechanism in a finally: clause) and leaves the lock there, all
+  processes that are trying to read or write to the database would be
+  blocked indefinitely.
+
+License
+-------
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published by
+the Free Software Foundation, either version 3 of the License, or (at
+your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Affero
+General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program, it should be a file called "LICENSE" in the
+same directory as this "README".  If you don't have the license file for
+some reason, you may find the license on https://www.gnu.org/licenses/.
+
+This program incorporates some code from other programs, by other
+copyright holders, under a permissive license compatible with the GNU
+AGPL. This includes:
+
+* The parse_dkim_header function in smlmp/common.py.
+
+In this case, my modifications in that function is still licensed under
+the relevant permissive license, which I have put in the comments of the
+function's source.
