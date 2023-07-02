@@ -44,6 +44,7 @@ def deliver() -> None:
     assert os.environ["DOMAIN"] == config["general"]["domain"]
 
     try:
+        return_path = os.environ["SENDER"]
         receiving_address = os.environ["ORIGINAL_RECIPIENT"]
         list_name, extension, receiving_address_domain = parse_local_address(receiving_address)
 
@@ -93,7 +94,6 @@ def deliver() -> None:
 
     except SMLMPSenderError as e:
         # Bounce to the user that their message failed, providing a reason.
-        return_path = msg["Return-Path"][1:-1]
         newmsg = email.message.EmailMessage(policy=policy)
         newmsg["To"] = return_path
         newmsg["Subject"] = "Undelivered Mail Returned to Sender"
@@ -108,7 +108,6 @@ def deliver() -> None:
         report_error(e)
 
         # Also bounce to the user that their message failed.
-        return_path = msg["Return-Path"][1:-1]
         newmsg = email.message.EmailMessage(policy=policy)
         newmsg["To"] = return_path
         newmsg["Subject"] = "Undelivered Mail Returned to Sender"
