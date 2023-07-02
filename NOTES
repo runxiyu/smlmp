@@ -17,7 +17,6 @@ ORIGINAL_RECIPIENT	mailing_list_address@self_domain
 RECIPIENT		_smlmp@self_domain
 SENDER			sending_user@sending_domain
 EXTENSION		(thing between + and @)
-LOGNAME			_smlmp
 
 Sendmail
 --------

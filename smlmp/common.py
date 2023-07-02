@@ -185,8 +185,10 @@ def parse_dkim_header(dkim_header: str) -> tuple[set[str], dict[str, str]]:
 
 def read_db() -> None:
     with open(config["general"]["database"], "r") as db_file:
-        fnctl.flock(x, fnctl.LOCK_EX) # | fnctl.LOCK_NB)
+        fnctl.flock(x, fnctl.LOCK_SH) # | fnctl.LOCK_NB
         db = json.load(db_file)
         fcntl.flock(db_file, fcntl.LOCK_UN)
     return db
 # BLOCKS until it could acquire the lock - also we're blocking two reads from happening together
+
+
