@@ -2,12 +2,36 @@ SMLMP - Simple Mailing List Management Program
 ==============================================
 
 SMLMP is a simple mailing list management program designed to be used
-with Postfix. It is written in the Python programming language, but is
-currently incomplete and under development.
+with Postfix on the same system. It is written in the Python programming
+language, but is currently incomplete and under development.
 
 WARNING: This program is currently in pre-alpha development quality.
 Do not use it in important production environments. It also hasn't got
 any security audits.
+
+Configuration requirements
+--------------------------
+Consider reading docs/setup.txt for a step-by-step guidance.
+
+Your mail server must run the smlmp.mda Python module correctly (do not
+directly run the mda.py script as that would cause import issues - a
+wrapper script is provided in the examples/ directory to set PYTHONPATH
+and run-as-module correctly) as a mail delivery agent (docs/mda.txt)
+under an appropriate user with read access to /etc/smlmp.conf and read &
+write access to the database configured in /etc/smlmp.conf. Note: If you
+simply let a Postfix alias pipe delivery to the MDA, it will be executed
+as the "nobody" user, which would cause permission problems trying to
+modify the SMLMP database; and if you grant "nobody" permissions to do
+stuff that's a security risk because other services on your system often
+rely on "nobody" not being able to access anything. You must somehow let
+it run under the right permissions.
+
+An example /etc/smlmp.conf is provided in the examples/ directory.
+
+
+TODO: Write this part in more detail.
+
+
 
 Note to self
 ------------
@@ -15,19 +39,11 @@ Remember to delete origin/sqlite3.
 
 Dependencies
 ------------
+* 
 * dkimpy (python3-dkim on Debian)
 * Python 3.10 or above
-  This means that this program will not work on Debian 11 bullseye and
-  lower. Upgrade your system.
-
-Setup
------
-(This section is unfinished)
-* Username running the MDA must be in full lowercase
-
-Setup for public-inbox
-----------------------
-(This section is unfinished)
+  This means that this program will not work on Debian 11 bullseye or
+  older. Upgrade your system.
 
 Implemented features
 --------------------
@@ -60,13 +76,17 @@ Future features
 
 Bugs
 ----
-* Database-related functions simply block if they cannot acquire the
-  database's file lock. In case another process (other delivery agents,
-  or perhaps the Web interface's backend) crashes (SIGKILL, segmentation
-  fault, etc; SIGTERM shouldn't cause problems as I put the unlocking
-  mechanism in a finally: clause) and leaves the lock there, all
-  processes that are trying to read or write to the database would be
-  blocked indefinitely.
+* The flock is automatically released when the Python process that
+  creates it dies. If the process dies in the middle of writing, it
+  might leave a corrupted file, and since the lock is released we won't
+  be able to detect that.
+
+Resolvable limitations
+----------------------
+* Currently, the domain-part of all handled mailing lists must match the
+  domain-part of the email address that smlmp directly handles. I don't
+  think this is a protocol limitation, it's an artefact of how I pass
+  around mailing list names. (Issue #1)
 
 License
 -------

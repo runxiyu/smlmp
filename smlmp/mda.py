@@ -135,7 +135,7 @@ def handle_mail_addressed_to_list(
     db: dict[str, Any],
     extension: str,
     config: configparser.ConfigParser,
-    from_address: str;
+    from_address: str
 ) -> None:
     if extension:
         with open(config["general"]["database"], "r+") as db_file:

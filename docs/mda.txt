@@ -1,0 +1,45 @@
+What is a Mail Delivery Agent?
+==============================
+
+The part of SMLMP that connects to Postfix is a mail delivery agent,
+abbreviated as "MDA". Basically, it expects certain environment
+variables as described below to be set. SMLMP's MDA expects the
+following environment variables to be correctly set by Postfix when it 
+is called.
+
+LOCAL                   The local-part of the final recipient address.
+DOMAIN                  The domain-part of the final recipient address.
+			As a special requirement, this must also be the
+			domain-part of all mailing list addresses due to
+			a technical limitaiton.
+ORIGINAL_RECIPIENT      The original recipient when Postfix is told to
+			handle the message.
+			Note that this does not include all original
+			recipients, it just states the original
+			recipient that "caused" Postfix to deliver it
+			to our LOCAL.
+SENDER                  The SMTP envelope sender, as opposed to the From
+			or Sender header in the email content. This is
+			used for bouncing.
+
+These are not used by SMLMP as of the time of writing:
+
+RECIPIENT*              Full final recipient address.
+MAIL_CONFIG*            Usually just /etc/postfix.
+EXTENSION*              The subaddressing extension of the final
+			recipient address. We don't actually use this
+			environment variable, we care about the
+			subaddressing extension in ORIGINAL_RECIPIENT
+			instead, which we would parse ourself.
+			(For background information on what
+			subaddressing is, consult the comment above the
+			"recipient_delimiter" option in the example
+			smlmp.conf.)
+
+The "finial recipient address" is not standard terminology. Here it
+refers to the primary address that SMLMP is in charge of, after postfix
+handles all aliases and routing. Our MDA sits at the final recipient
+address and processes messages sent to it.
+
+Important: The MDA expects to receive the content of the message to
+deliver on standard input.
