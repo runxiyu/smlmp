@@ -28,6 +28,7 @@ import email
 import subprocess
 import json
 import dkim
+import fcntl
 
 
 def deliver() -> None:
@@ -58,6 +59,16 @@ def deliver() -> None:
             sendmail(msg, specified_recipients_only=True, extra_recipients=[config["general"]["administrator"]])
             return
 
+        if len(msg["From"].addresses) != 1:
+            raise SMLMPSenderError("Only one From addres is supported.")
+        from_address = (msg["From"].addresses[0].username + "@" + msg["From"].addresses[0].domain).lower()
+
+        if not msg["DKIM-Signature"]:
+            raise SMLMPSenderError("Your email does not have a DKIM Signature.")
+        elif not dkim.verify(msg.as_bytes()):
+            # TODO: verify DMARC instead of DKIM
+            raise SMLMPSenderError("Your email does not pass DKIM.")
+
         if list_name not in db:
             raise SMLMPInvalidConfiguration(
                 "I was asked to handle email for %s but I wasn't configured to do so. You have a broken Postfix or SMLMP configuration."
@@ -72,27 +83,29 @@ def deliver() -> None:
         handle_mail_addressed_to_list(
             msg,
             list_name=list_name,
-            list_config=db[list_name],
+            db=db,
             extension=extension,
             config=config,
-            receiving_address=receiving_address,
+            from_address=from_address,
         )
 
-#    except SMLMPSenderError as e:
-#        # Bounce to the user that their message failed, providing a reason.
-#        return_path = msg["Return-Path"][1:-1]
-#        newmsg = email.message.EmailMessage(policy=policy)
-#        newmsg["To"] = return_path
-#        newmsg["Subject"] = "Undelivered Mail Returned to Sender"
-#        newmsg["From"] = config["general"]["localname"] + config["general"]["recipient_delimiter"] + "bounces@" + config["general"]["domain"]
-#        newmsg.set_content("Your email to this mailing list was rejected.\n\n" + "\n".join(e.args))
-#        newmsg.add_attachment(raw_message, maintype="message", subtype="rfc822", filename="original.eml")
-#        sendmail(newmsg)
-#
-#    # except SMLMPException as e:
-#    except Exception as e:
-#        # Tell the administrator that a weird exception has occured.
-#        report_error(e)
+
+
+    except SMLMPSenderError as e:
+        # Bounce to the user that their message failed, providing a reason.
+        return_path = msg["Return-Path"][1:-1]
+        newmsg = email.message.EmailMessage(policy=policy)
+        newmsg["To"] = return_path
+        newmsg["Subject"] = "Undelivered Mail Returned to Sender"
+        newmsg["From"] = config["general"]["localname"] + config["general"]["recipient_delimiter"] + "bounces@" + config["general"]["domain"]
+        newmsg.set_content("Your email to this mailing list was rejected with this error message:\n\n" + "\n".join(e.args))
+        newmsg.add_attachment(raw_message, maintype="message", subtype="rfc822", filename="original.eml")
+        sendmail(newmsg)
+
+    # except SMLMPException as e:
+    except Exception as e:
+        # Tell the administrator that a weird exception has occured.
+        report_error(e)
 
         # Also bounce to the user that their message failed.
         return_path = msg["Return-Path"][1:-1]
@@ -120,33 +133,47 @@ https://git.andrewyu.org/andrew/smlmp.git/.
 def handle_mail_addressed_to_list(
     msg: email.message.EmailMessage,
     list_name: str,
-    list_config: dict[str, Any],
+    db: dict[str, Any],
     extension: str,
     config: configparser.ConfigParser,
-    receiving_address: str,
+    from_address: str;
 ) -> None:
     if extension:
-        # TODO Implement action addresses based on extensions
-        raise SMLMPException("Oops, extensions in list addresses aren't implemented yet!")
+        with open(config["general"]["database"], "r+") as db_file:
+            fcntl.flock(x, fcntl.LOCK_EX)
+            # Reload the database so we won't overwrite other processes' changes that might have occured between our first read of the database and right here.
+            db = json.load(db_file)
+            try:
+                if extension == "subscribe":
+                    if from_address in db[list_name]["members"]:
+                        raise SMLMPSenderError("You are already subscribed to the list, there's no need to subscribe.")
+                    if not db[list_name]["self-subscribe-allowed"]:
+                        raise SMLMPSenderError("You cannot subscribe yourself to this list. Perhaps contact the owner %s." % db[list_name]["owner"])
+                    db[list_name]["members"].append(from_address)
+                elif extension == "unsubscribe":
+                    if from_address not in db[list_name]["members"]:
+                        raise SMLMPSenderError("You are not subscribed to the list, you can't unsubscribe.")
+                    while from_address in db[list_name]["members"]:
+                        db[list_name]["members"].remove(from_address)
+                else:
+                    raise SMLMPSenderError("%s is not a valid subaddressing extension." % extension)
+                json.dump(db, db_file, check_circular=True, indent=0)
+            finally:
+                db_file.flush()
+                fcntl.flock(db_file, fcntl.LOCK_UN)
+                db_file.close()
 
     # The absence of an extension means that the incoming mail is posted to the main list address. We then check and deliver the message.
-    if len(msg["From"].addresses) != 1:
-        raise SMLMPSenderError("You must use one and only one address in the From header.")
-    from_address = (msg["From"].addresses[0].username + "@" + msg["From"].addresses[0].domain).lower()
-    if list_config["allowed_senders"] == "members":
-        if from_address not in list_config["members"]:
+
+    if db[list_name]["allowed_senders"] == "members":
+        if from_address not in db[list_name]["members"]:
             raise SMLMPSenderError("Only list members may post to this list.")
-    elif list_config["allowed_senders"] == "moderators":
-        if from_address not in list_config["moderators"]:
+    elif db[list_name]["allowed_senders"] == "moderators":
+        if from_address not in db[list_name]["moderators"]:
             raise SMLMPSenderError("Only list moderators may post to this list.")
     else:
-        if list_config["allowed_senders"] != "anyone":
+        if db[list_name]["allowed_senders"] != "anyone":
             raise SMLMPInvalidConfiguration("allowed_senders must be one of 'anyone', 'moderators' and 'members'.")
-
-    if not msg["DKIM-Signature"]:
-        raise SMLMPSenderError("Your email does not have a DKIM Signature.")
-    elif not dkim.verify(msg.as_bytes()):
-        raise SMLMPSenderError("Your email does not pass DKIM.")
 
     dkim_include_headers, dkim_tags = parse_dkim_header(msg["DKIM-Signature"])
 
@@ -170,7 +197,7 @@ def handle_mail_addressed_to_list(
             % str(force_munge_headers)
         )
 
-    if list_config["announcements-only"]:
+    if db[list_name]["announcements-only"]:
         msg["List-Post"] = "NO"
     else:
         msg["List-Post"] = "<" + list_name + "@" + config["general"]["domain"] + ">"
@@ -182,19 +209,19 @@ def handle_mail_addressed_to_list(
     msg["List-Unsubscribe"] = (
         "<" + list_name + config["general"]["recipient_delimiter"] + "unsubscribe@" + config["general"]["domain"] + ">"
     )
-    if list_config["archive"]:
+    if db[list_name]["archive"]:
         msg["List-Archive"] = "<" + config["general"]["web_root"] + list_name + "/archive" + ">"
     else:
         del msg["List-Archive"]
-    msg["List-Owner"] = "<" + list_config["owner"] + ">"
-    msg["List-ID"] = list_config["shortname"] + " <" + list_name + ".lists." + config["general"]["domain"] + ">"
+    msg["List-Owner"] = "<" + db[list_name]["owner"] + ">"
+    msg["List-ID"] = db[list_name]["shortname"] + " <" + list_name + ".lists." + config["general"]["domain"] + ">"
     msg["Sender"] = (
         config["general"]["localname"] + config["general"]["recipient_delimiter"] + "bounces@" + config["general"]["domain"]
     )  # Or config["general"]["localname"]?
     del msg["List-Unsubscribe-Post"]  # We do not follow RFC8058, but we still need to sanitize these headers.
 
-    sendmail(msg, specified_recipients_only=True, extra_recipients=list_config["members"])
-    if list_config["archive"]:
+    sendmail(msg, specified_recipients_only=True, extra_recipients=db[list_name]["members"])
+    if db[list_name]["archive"]:
         sendmail(msg, specified_recipients_only=True, extra_recipients=[config["delivery agent"]["archiver_address"]])
 
 

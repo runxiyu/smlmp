@@ -40,6 +40,7 @@ web_root = https://lists.mail.andrewyu.org/
 # to check the validity of incoming mail, and is used (with the
 # "bounces" address extension) when sending mail, as the envelope from
 # address, and the "Sender" header in list posts.
+# This must be in lower case.
 localname = smlmp
 
 # What is the domain part of the email address that SMLMP handles?
