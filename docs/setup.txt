@@ -1,12 +1,17 @@
 Setting up SMLMP
 ================
 
+UNFINISHED!!!
+
 This is a guide for setting up SMLMP. It is directed towards Debian
 systems, and is tested on Debian 12 bookworm at the time of writing.
 Users of other distributions may need to modify commands accordingly to
 fit their system.
 
-If you already have a working email server, simply configure it to 
+If you already have a working email server, configure it so it follows
+the requirements in README. If this is hard, use discretion to continue
+following this guide, though note that this might not exactly work for
+you.
 
 If you don't have a working email server, set one up with
 https://git.andrewyu.org/andrew/forks/emailwiz.git/. READ THE
