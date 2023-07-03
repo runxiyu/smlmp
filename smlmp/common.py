@@ -16,9 +16,10 @@
 #
 
 from __future__ import annotations
-from typing import Optional, Union
+from typing import Optional, Union, Any
 import configparser
 import os
+import json
 import time
 import pathlib
 import subprocess
@@ -182,11 +183,12 @@ def parse_dkim_header(dkim_header: str) -> tuple[set[str], dict[str, str]]:
 #         db = json.load(db_file)
 #     return db
 
-def read_db() -> None:
+def read_db() -> dict[str, Any]:
     with open(config["general"]["database"], "r") as db_file:
-        fnctl.flock(x, fnctl.LOCK_SH) # | fnctl.LOCK_NB
+        fcntl.flock(db_file, fcntl.LOCK_SH) # | fcntl.LOCK_NB
         db = json.load(db_file)
         fcntl.flock(db_file, fcntl.LOCK_UN)
+    assert type(db) is dict
     return db
 # BLOCKS until it could acquire the lock - also we're blocking two reads from happening together
 

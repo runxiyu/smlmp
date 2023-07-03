@@ -29,7 +29,7 @@ import subprocess
 import json
 import dkim
 import fcntl
-
+import configparser
 
 def deliver() -> None:
     config = get_config()
@@ -139,7 +139,7 @@ def handle_mail_addressed_to_list(
 ) -> None:
     if extension:
         with open(config["general"]["database"], "r+") as db_file:
-            fcntl.flock(x, fcntl.LOCK_EX)
+            fcntl.flock(db_file, fcntl.LOCK_EX)
             # Reload the database so we won't overwrite other processes' changes that might have occured between our first read of the database and right here.
             db = json.load(db_file)
             try:
