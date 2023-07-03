@@ -142,6 +142,7 @@ def handle_mail_addressed_to_list(
             fcntl.flock(db_file, fcntl.LOCK_EX)
             # Reload the database so we won't overwrite other processes' changes that might have occured between our first read of the database and right here.
             db = json.load(db_file)
+            # TODO: Don't use SenderError, make a new exception that replies with the correct formatting, i.e. From the command address, rather than the bounces address; also don't say "Undelivered mail returned to sender"; also send it to the MIME From, not the Envelope From; also set In-Reply-To to Message-ID
             try:
                 if extension == "subscribe":
                     if from_address in db[list_name]["members"]:
@@ -161,6 +162,8 @@ def handle_mail_addressed_to_list(
                 db_file.flush()
                 fcntl.flock(db_file, fcntl.LOCK_UN)
                 db_file.close()
+        # TODO: Reply with success/failure
+        return
 
     # The absence of an extension means that the incoming mail is posted to the main list address. We then check and deliver the message.
 
