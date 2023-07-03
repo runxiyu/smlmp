@@ -18,9 +18,9 @@
 		"archive": true,
 		"self-subscribe-allowed": true,
 		"announcements-only": false,
-		"members": ["fun@andrewyu.org", "andrew@andrewyu.org", "andrew@noisytoot.org", "andrew@tilde.team"],
+		"members": ["vitali64pmemail@protonmail.com", "info@minifree.org", "fun@andrewyu.org", "andrew@andrewyu.org", "andrew@noisytoot.org", "andrew@tilde.team"],
 		"moderators" : ["vitali64pmemail@protonmail.com"],
-		"allowed_senders" : "members",
+		"allowed_senders" : "anyone",
 		"owner" : "vitali64pmemail@protonmail.com"
 	},
 	"test-list": {
