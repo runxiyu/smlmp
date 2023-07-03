@@ -124,7 +124,7 @@ The administrator of this server is %s.
 
 The mailing list software used is SMLMP, with its upstream hosted at
 https://git.andrewyu.org/andrew/smlmp.git/.
-""" % config["general"]["domain"], config["general"]["administrator"])
+""" % (config["general"]["domain"], config["general"]["administrator"]))
         newmsg.add_attachment(raw_message, maintype="message", subtype="rfc822", filename="original.eml")
         # Consider using multipart delivery reports
         sendmail(newmsg)
