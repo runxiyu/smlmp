@@ -47,7 +47,7 @@ if not config["general"]["web_root"].endswith("/"):
     config["general"]["web_root"] += "/"
 
 
-policy = email.policy.SMTP.clone(refold_source="none")
+policy = email.policy.SMTP.clone(refold_source="none", mangle_from_=False, max_line_length=998, cte_type="8bit", raise_on_defect=True)
 
 
 class SMLMPException(Exception):
