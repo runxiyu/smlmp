@@ -66,12 +66,15 @@ def deliver() -> None:
         if len(msg["From"].addresses) != 1:
             raise SMLMPSenderError("Only one From addres is supported.")
         from_address = (msg["From"].addresses[0].username + "@" + msg["From"].addresses[0].domain).lower()
+        dkim_include_headers, dkim_tags = parse_dkim_header(msg["DKIM-Signature"])
 
         if not msg["DKIM-Signature"]:
             raise SMLMPSenderError("Your email does not have a DKIM Signature.")
         elif not dkim.verify(msg.as_bytes()):
-            # TODO: verify DMARC instead of DKIM
-            raise SMLMPSenderError("Your email does not pass DKIM.")
+            raise SMLMPSenderError("Your email fails DKIM.")
+        elif dkim_tags["d"] != msg["From"].addresses[0].domain:
+            raise SMLMPSenderError("Your DKIM does not align with the domain-part of your From: header.")
+
 
         if list_name not in db:
             raise SMLMPInvalidConfiguration(
@@ -180,7 +183,6 @@ def handle_mail_addressed_to_list(
         if db[list_name]["allowed_senders"] != "anyone":
             raise SMLMPInvalidConfiguration("allowed_senders must be one of 'anyone', 'moderators' and 'members'.")
 
-    dkim_include_headers, dkim_tags = parse_dkim_header(msg["DKIM-Signature"])
 
     # TODO Sanitize message
 

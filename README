@@ -56,10 +56,6 @@ Bugs
   might leave a corrupted file, and since the lock is released we won't
   be able to detect that.
 * Potential race condition when writing the database?
-* We should verify the DMARC of incoming messages rather than DKIM,
-  otherwise we would have no way to know whether our From address was
-  actually spoofed. Do note that we must verify DKIM when using DMARC,
-  as SPF won't align as when we send email out to other servers.
 * Missing Input validation for the From address and other headers.
 * Currently, the domain-part of all handled mailing lists must match the
   domain-part of the email address that smlmp directly handles. I don't
