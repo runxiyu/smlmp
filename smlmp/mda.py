@@ -225,9 +225,10 @@ def handle_mail_addressed_to_list(
     )  # Or config["general"]["localname"]?
     del msg["List-Unsubscribe-Post"]  # We do not follow RFC8058, but we still need to sanitize these headers.
 
-    sendmail(msg, specified_recipients_only=True, extra_recipients=db[list_name]["members"])
     if db[list_name]["archive"]:
-        sendmail(msg, specified_recipients_only=True, extra_recipients=[config["delivery agent"]["archiver_address"]])
+        sendmail(msg, specified_recipients_only=True, extra_recipients=[config["delivery agent"]["archiver_address"]] + db[list_name]["members"])
+    else:
+        sendmail(msg, specified_recipients_only=True, extra_recipients=db[list_name]["members"])
 
 
 if __name__ == "__main__":
