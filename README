@@ -60,13 +60,15 @@ Bugs
   actually spoofed. Do note that we must verify DKIM when using DMARC,
   as SPF won't align as when we send email out to other servers.
 * Missing Input validation for the From address and other headers.
-
-Resolvable limitations
-----------------------
 * Currently, the domain-part of all handled mailing lists must match the
   domain-part of the email address that smlmp directly handles. I don't
   think this is a protocol limitation, it's an artefact of how I pass
   around mailing list names.
+* Vulnerability surrouding public-inbox: A malicious user who wishes to
+  inject content into the list archive's public-inbox may directly send
+  an email to public-inbox's user, setting the List-ID header to one
+  that public-inbox expects.
+  This is not a problem with SMLMP but arises in common configurations.
 
 License
 -------
