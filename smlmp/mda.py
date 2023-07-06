@@ -20,7 +20,10 @@
 from __future__ import annotations
 from typing import Union, Any
 
-from .common import *
+try:
+    from .common import *
+except ImportError:
+    from common import *
 
 import sys
 import os
