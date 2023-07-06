@@ -1,7 +1,7 @@
 #!/bin/sh
 
 
-/sbin/sendmail -t -oi <<EOF
+/sbin/sendmail -t -oi -r andrew@andrewyu.org <<EOF
 To: Test List <test-list@andrewyu.org>
 From: Andrew Yu <andrew@andrewyu.org>
 Subject: Test Email
