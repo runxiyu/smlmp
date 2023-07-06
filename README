@@ -50,6 +50,7 @@ Future features
 
 Bugs
 ----
+* What sendmail() options should we use?
 * We shouldn't create a seperate SMTP instance to send things to the
   archiver, it should be sent along with the other recipients'.
 * The flock is automatically released when the Python process that
