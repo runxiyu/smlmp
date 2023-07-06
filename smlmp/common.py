@@ -93,6 +93,7 @@ def sendmail(
     else:
         recipients = extra_recipients + extract_recipient_addresses(message)
     conn.sendmail(bounce_address, recipients, message.as_bytes(policy=policy))
+    conn.quit()
 
 
 def tell_administrator(message: email.message.EmailMessage) -> None:
