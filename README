@@ -1,9 +1,9 @@
 SMLMP - Simple Mailing List Management Program
 ==============================================
 
-SMLMP is a simple mailing list management program designed to be used
-with Postfix on the same system. It is written in the Python programming
-language, but is currently incomplete and under development.
+SMLMP is a simple mailing list management program designed to be used on
+the same system as a Postfix MTA. It is written in the Python
+programming language, but is currently incomplete and under development.
 
 WARNING: This program is currently in pre-alpha development quality.
 Do not use it in important production environments. It also hasn't got
