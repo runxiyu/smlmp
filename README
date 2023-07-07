@@ -7,7 +7,8 @@ programming language, but is currently incomplete and under development.
 
 WARNING: This program is currently in pre-alpha development quality.
 Do not use it in important production environments. It also hasn't got
-any security audits.
+any security audits. Use the most recent tag if you actually want to
+run the program; the HEAD is doomed to be unstable.
 
 Configuration requirements
 --------------------------
@@ -50,13 +51,13 @@ Future features
 
 Bugs
 ----
+* CRITICAL: "Relay access denied"
 * What sendmail() options should we use?
 * The flock is automatically released when the Python process that
   creates it dies. If the process dies in the middle of writing, it
   might leave a corrupted file, and since the lock is released we won't
   be able to detect that.
 * Potential race condition when writing the database?
-* Missing Input validation for the From address and other headers.
 * Currently, the domain-part of all handled mailing lists must match the
   domain-part of the email address that smlmp directly handles. I don't
   think this is a protocol limitation, it's an artefact of how I pass
@@ -66,6 +67,7 @@ Bugs
   an email to public-inbox's user, setting the List-ID header to one
   that public-inbox expects.
   This is not a problem with SMLMP but arises in common configurations.
+* Check for edge cases everywhere!
 
 License
 -------

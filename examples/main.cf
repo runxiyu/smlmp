@@ -1,0 +1,17 @@
+# Add the following to your Postfix main.cf.
+
+smlmp_destination_recipient_limit = 1
+
+virtual_alias_maps = hash:/srv/smlmp/smlmp/examples/virtual
+
+# If you have other virtual maps, seperate them with commas like this:
+# virtual_alias_maps = hash:/srv/smlmp/smlmp/examples/virtual, hash:/etc/postfix/virtual
+
+propagate_unmatched_extensions = canonical, virtual
+
+# If you need other settings here, seperate them with commas like this:
+# propagate_unmatched_extensions = canonical, virtual, alias, forward, include, generic
+
+transport_maps = hash:/srv/smlmp/smlmp/examples/transport
+# If you have other transport maps, seperate them with commas like this:
+# transport_maps = hash:/srv/smlmp/smlmp/examples/transport, hash:/etc/postfix/transport

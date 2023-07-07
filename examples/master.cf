@@ -1,0 +1,6 @@
+# Add the following to your Postfix master.cf.
+
+smlmp unix - n n - - pipe
+  flags=huX user=smlmp argv=/srv/smlmp/smlmp/examples/smlmp_postfix_pipe_transport.sh ${original_recipient} ${sender}
+
+# See also: examples/main.cf, examples/virtual, examples/transport

@@ -1,9 +1,11 @@
-What is a Mail Delivery Agent?
+What is a Local Delivery Agent?
 ==============================
 
+!!! This is deprecated
+
 The part of SMLMP that connects to Postfix is a mail delivery agent,
-abbreviated as "MDA". Basically, it expects certain environment
-variables as described below to be set. SMLMP's MDA expects the
+abbreviated as "LDA". Basically, it expects certain environment
+variables as described below to be set. SMLMP's LDA expects the
 following environment variables to be correctly set by Postfix when it 
 is called.
 
@@ -38,8 +40,8 @@ EXTENSION*              The subaddressing extension of the final
 
 The "finial recipient address" is not standard terminology. Here it
 refers to the primary address that SMLMP is in charge of, after postfix
-handles all aliases and routing. Our MDA sits at the final recipient
+handles all aliases and routing. Our LDA sits at the final recipient
 address and processes messages sent to it.
 
-Important: The MDA expects to receive the content of the message to
+Important: The LDA expects to receive the content of the message to
 deliver on standard input.

@@ -42,10 +42,6 @@ def deliver() -> None:
     msg = email.message_from_bytes(raw_message, policy=policy)
     assert type(msg) is email.message.EmailMessage
 
-    # If any of these tests fail we have a configuration error
-    assert os.environ["LOCAL"] == config["general"]["localname"]
-    assert os.environ["DOMAIN"] == config["general"]["domain"]
-
     try:
         return_path = os.environ["SENDER"]
         receiving_address = os.environ["ORIGINAL_RECIPIENT"]
